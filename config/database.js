@@ -74,10 +74,8 @@ const createTables = async () => {
     CREATE TABLE IF NOT EXISTS moods (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
-      rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 10),
-      emotions TEXT, -- JSON string of emotions array
+      rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
       note TEXT,
-      activities TEXT, -- JSON string of activities array
       date DATE NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -94,21 +92,22 @@ const createTables = async () => {
 
   await runQuery(`
     CREATE TABLE IF NOT EXISTS tag (
-        id INTEGER AUTOINCREMENT,
-        tag_name TEXT NOT NULL,
-        icone TEXT NOT NULL,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tag_name TEXT UNIQUE NOT NULL,
         group_id INTEGER NOT NULL,
-        PRIMARY KEY (id, tag_name),
         FOREIGN KEY (group_id) REFERENCES group_tag(id) ON DELETE CASCADE
     )
   `);
 
-
-  // Create indexes for better performance
-  await runQuery('CREATE INDEX IF NOT EXISTS idx_moods_user_id ON moods(user_id)');
-  await runQuery('CREATE INDEX IF NOT EXISTS idx_moods_date ON moods(date)');
-  await runQuery('CREATE INDEX IF NOT EXISTS idx_moods_user_date ON moods(user_id, date)');
-  await runQuery('CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens(user_id)');
+  await runQuery(`
+    CREATE TABLE IF NOT EXISTS mood_tag (
+      mood_id INTEGER NOT NULL,
+      tag_id INTEGER NOT NULL,
+      PRIMARY KEY (mood_id, tag_id),
+      FOREIGN KEY (mood_id) REFERENCES moods(id) ON DELETE CASCADE,
+      FOREIGN KEY (tag_id) REFERENCES tag(id) ON DELETE CASCADE
+    )
+  `);
 };
 
 // Helper function to run queries with Promise
