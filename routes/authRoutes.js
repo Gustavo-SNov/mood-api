@@ -1,0 +1,67 @@
+import express from 'express';
+import { body } from 'express-validator';
+import {
+  register,
+  login,
+  refreshToken,
+  logout,
+  verifyToken,
+  getProfile,
+  updateProfile
+} from '../controllers/authController.js';
+import { authenticateToken } from '../middleware/auth.js';
+
+const router = express.Router();
+
+// Validation rules
+const registerValidation = [
+  body('name')
+    .trim()
+    .isLength({ min: 2, max: 50 })
+    .withMessage('Name must be between 2 and 50 characters'),
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please provide a valid email'),
+  body('password')
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters long')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number')
+];
+
+const loginValidation = [
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please provide a valid email'),
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required')
+];
+
+const profileUpdateValidation = [
+  body('name')
+    .optional()
+    .trim()
+    .isLength({ min: 2, max: 50 })
+    .withMessage('Name must be between 2 and 50 characters'),
+  body('email')
+    .optional()
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please provide a valid email')
+];
+
+// Auth routes
+router.post('/register', registerValidation, register);
+router.post('/login', loginValidation, login);
+router.post('/refresh', refreshToken);
+router.post('/logout', logout);
+router.get('/verify', authenticateToken, verifyToken);
+
+// Profile routes
+router.get('/profile', authenticateToken, getProfile);
+router.put('/profile', authenticateToken, profileUpdateValidation, updateProfile);
+
+export default router;
