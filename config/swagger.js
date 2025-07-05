@@ -7,7 +7,7 @@ const options = {
     info: {
       title: 'Mood Tracker API',
       version: '1.0.0',
-      description: 'A comprehensive API for mood tracking with user authentication, mood entries, analytics, and trends.',
+      description: 'API completa para rastreamento de humor com autenticação JWT e análises avançadas',
       contact: {
         name: 'API Support',
         email: 'support@moodtracker.com'
@@ -20,7 +20,7 @@ const options = {
     servers: [
       {
         url: process.env.API_URL || 'http://localhost:3000',
-        description: 'Development server'
+        description: 'Servidor de desenvolvimento'
       }
     ],
     components: {
@@ -29,7 +29,7 @@ const options = {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
-          description: 'Enter your JWT token'
+          description: 'Token JWT para autenticação'
         }
       },
       schemas: {
@@ -38,26 +38,28 @@ const options = {
           properties: {
             id: {
               type: 'integer',
-              description: 'User ID'
+              description: 'ID único do usuário'
             },
             name: {
               type: 'string',
-              description: 'User full name'
+              description: 'Nome completo do usuário',
+              example: 'João Silva'
             },
             email: {
               type: 'string',
               format: 'email',
-              description: 'User email address'
+              description: 'Email do usuário',
+              example: 'joao@email.com'
             },
             created_at: {
               type: 'string',
               format: 'date-time',
-              description: 'Account creation timestamp'
+              description: 'Data de criação da conta'
             },
             updated_at: {
               type: 'string',
               format: 'date-time',
-              description: 'Last update timestamp'
+              description: 'Data da última atualização'
             }
           }
         },
@@ -66,96 +68,51 @@ const options = {
           properties: {
             id: {
               type: 'integer',
-              description: 'Mood entry ID'
+              description: 'ID único do registro de humor'
             },
             mood_value: {
               type: 'integer',
               minimum: 1,
               maximum: 10,
-              description: 'Mood rating from 1 (worst) to 10 (best)'
+              description: 'Valor do humor de 1 a 10',
+              example: 8
             },
             emotions: {
               type: 'array',
               items: {
                 type: 'string'
               },
-              description: 'List of emotions experienced'
+              description: 'Lista de emoções',
+              example: ['feliz', 'motivado', 'energético']
             },
             notes: {
               type: 'string',
-              maxLength: 1000,
-              description: 'Additional notes about the mood'
+              description: 'Notas adicionais sobre o humor',
+              example: 'Dia produtivo no trabalho'
             },
             activities: {
               type: 'array',
               items: {
                 type: 'string'
               },
-              description: 'Activities performed during the day'
+              description: 'Atividades realizadas',
+              example: ['trabalho', 'exercício', 'leitura']
             },
             date: {
               type: 'string',
               format: 'date',
-              description: 'Date of the mood entry (YYYY-MM-DD)'
+              description: 'Data do registro',
+              example: '2023-12-01'
             },
             created_at: {
               type: 'string',
               format: 'date-time',
-              description: 'Entry creation timestamp'
+              description: 'Data de criação do registro'
             },
             updated_at: {
               type: 'string',
               format: 'date-time',
-              description: 'Last update timestamp'
-            }
-          }
-        },
-        MoodAnalytics: {
-          type: 'object',
-          properties: {
-            totalEntries: {
-              type: 'integer',
-              description: 'Total number of mood entries'
-            },
-            averageMood: {
-              type: 'number',
-              format: 'float',
-              description: 'Average mood value'
-            },
-            moodDistribution: {
-              type: 'object',
-              additionalProperties: {
-                type: 'integer'
-              },
-              description: 'Distribution of mood values'
-            },
-            moodTrend: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  week: {
-                    type: 'string',
-                    description: 'Week identifier'
-                  },
-                  average: {
-                    type: 'number',
-                    format: 'float',
-                    description: 'Average mood for the week'
-                  }
-                }
-              },
-              description: 'Weekly mood trends'
-            },
-            bestDay: {
-              type: 'string',
-              format: 'date',
-              description: 'Date with the highest mood'
-            },
-            worstDay: {
-              type: 'string',
-              format: 'date',
-              description: 'Date with the lowest mood'
+              description: 'Data da última atualização'
             }
           }
         },
@@ -188,7 +145,7 @@ const options = {
             }
           }
         },
-        SuccessResponse: {
+        MoodResponse: {
           type: 'object',
           properties: {
             success: {
@@ -196,18 +153,110 @@ const options = {
               example: true
             },
             message: {
-              type: 'string'
+              type: 'string',
+              example: 'Mood entry created successfully'
             },
             data: {
-              type: 'object'
-            },
-            timestamp: {
-              type: 'string',
-              format: 'date-time'
+              type: 'object',
+              properties: {
+                mood: {
+                  $ref: '#/components/schemas/Mood'
+                }
+              }
             }
           }
         },
-        ErrorResponse: {
+        MoodListResponse: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean',
+              example: true
+            },
+            data: {
+              type: 'object',
+              properties: {
+                moods: {
+                  type: 'array',
+                  items: {
+                    $ref: '#/components/schemas/Mood'
+                  }
+                },
+                pagination: {
+                  type: 'object',
+                  properties: {
+                    limit: {
+                      type: 'integer',
+                      example: 50
+                    },
+                    offset: {
+                      type: 'integer',
+                      example: 0
+                    },
+                    total: {
+                      type: 'integer',
+                      example: 25
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        Analytics: {
+          type: 'object',
+          properties: {
+            totalEntries: {
+              type: 'integer',
+              description: 'Total de registros de humor',
+              example: 30
+            },
+            averageMood: {
+              type: 'number',
+              description: 'Humor médio no período',
+              example: 7.5
+            },
+            moodDistribution: {
+              type: 'object',
+              description: 'Distribuição dos valores de humor',
+              example: {
+                "1": 2,
+                "2": 1,
+                "7": 8,
+                "8": 12,
+                "9": 5,
+                "10": 2
+              }
+            },
+            moodTrend: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  week: {
+                    type: 'string',
+                    example: '2023-W48'
+                  },
+                  average: {
+                    type: 'number',
+                    example: 7.8
+                  }
+                }
+              }
+            },
+            bestDay: {
+              type: 'string',
+              format: 'date',
+              example: '2023-12-01'
+            },
+            worstDay: {
+              type: 'string',
+              format: 'date',
+              example: '2023-11-15'
+            }
+          }
+        },
+        Error: {
           type: 'object',
           properties: {
             success: {
@@ -215,7 +264,8 @@ const options = {
               example: false
             },
             message: {
-              type: 'string'
+              type: 'string',
+              example: 'Error message'
             },
             errors: {
               type: 'array',
@@ -245,9 +295,9 @@ const options = {
       }
     ]
   },
-  apis: ['./routes/*.js', './controllers/*.js']
+  apis: ['./routes/*.js', './controllers/*.js'], // Caminhos para os arquivos com anotações JSDoc
 };
 
 const specs = swaggerJsdoc(options);
 
-export { swaggerUi, specs };
+export { specs, swaggerUi };

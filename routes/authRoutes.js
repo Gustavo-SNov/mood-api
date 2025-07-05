@@ -57,8 +57,8 @@ const profileUpdateValidation = [
  * @swagger
  * /api/auth/register:
  *   post:
- *     summary: Register a new user
- *     tags: [Authentication]
+ *     summary: Registrar novo usuário
+ *     tags: [Autenticação]
  *     security: []
  *     requestBody:
  *       required: true
@@ -75,35 +75,35 @@ const profileUpdateValidation = [
  *                 type: string
  *                 minLength: 2
  *                 maxLength: 50
- *                 example: "João Silva"
+ *                 example: João Silva
  *               email:
  *                 type: string
  *                 format: email
- *                 example: "joao@email.com"
+ *                 example: joao@email.com
  *               password:
  *                 type: string
  *                 minLength: 6
- *                 pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)"
- *                 example: "MinhaSenh@123"
+ *                 pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)
+ *                 example: MinhaSenh@123
  *     responses:
  *       201:
- *         description: User registered successfully
+ *         description: Usuário registrado com sucesso
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/AuthResponse'
  *       400:
- *         description: Validation failed
+ *         description: Dados inválidos
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Error'
  *       409:
- *         description: User already exists
+ *         description: Email já existe
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Error'
  */
 router.post('/register', registerValidation, register);
 
@@ -111,8 +111,8 @@ router.post('/register', registerValidation, register);
  * @swagger
  * /api/auth/login:
  *   post:
- *     summary: Login user
- *     tags: [Authentication]
+ *     summary: Fazer login
+ *     tags: [Autenticação]
  *     security: []
  *     requestBody:
  *       required: true
@@ -127,29 +127,23 @@ router.post('/register', registerValidation, register);
  *               email:
  *                 type: string
  *                 format: email
- *                 example: "joao@email.com"
+ *                 example: joao@email.com
  *               password:
  *                 type: string
- *                 example: "MinhaSenh@123"
+ *                 example: MinhaSenh@123
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Login realizado com sucesso
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/AuthResponse'
- *       400:
- *         description: Validation failed
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  *       401:
- *         description: Invalid credentials
+ *         description: Credenciais inválidas
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Error'
  */
 router.post('/login', loginValidation, login);
 
@@ -157,8 +151,8 @@ router.post('/login', loginValidation, login);
  * @swagger
  * /api/auth/refresh:
  *   post:
- *     summary: Refresh access token
- *     tags: [Authentication]
+ *     summary: Renovar token de acesso
+ *     tags: [Autenticação]
  *     security: []
  *     requestBody:
  *       required: true
@@ -171,10 +165,10 @@ router.post('/login', loginValidation, login);
  *             properties:
  *               refreshToken:
  *                 type: string
- *                 description: Valid refresh token
+ *                 description: Refresh token JWT
  *     responses:
  *       200:
- *         description: Token refreshed successfully
+ *         description: Token renovado com sucesso
  *         content:
  *           application/json:
  *             schema:
@@ -185,19 +179,18 @@ router.post('/login', loginValidation, login);
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: "Token refreshed successfully"
+ *                   example: Token refreshed successfully
  *                 data:
  *                   type: object
  *                   properties:
  *                     token:
  *                       type: string
- *                       description: New JWT access token
  *       401:
- *         description: Invalid or expired refresh token
+ *         description: Refresh token inválido ou expirado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Error'
  */
 router.post('/refresh', refreshToken);
 
@@ -205,8 +198,8 @@ router.post('/refresh', refreshToken);
  * @swagger
  * /api/auth/logout:
  *   post:
- *     summary: Logout user
- *     tags: [Authentication]
+ *     summary: Fazer logout
+ *     tags: [Autenticação]
  *     security: []
  *     requestBody:
  *       content:
@@ -216,26 +209,10 @@ router.post('/refresh', refreshToken);
  *             properties:
  *               refreshToken:
  *                 type: string
- *                 description: Refresh token to invalidate
+ *                 description: Refresh token para invalidar
  *     responses:
  *       200:
- *         description: Logout successful
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/SuccessResponse'
- */
-router.post('/logout', logout);
-
-/**
- * @swagger
- * /api/auth/verify:
- *   get:
- *     summary: Verify access token
- *     tags: [Authentication]
- *     responses:
- *       200:
- *         description: Token is valid
+ *         description: Logout realizado com sucesso
  *         content:
  *           application/json:
  *             schema:
@@ -246,18 +223,41 @@ router.post('/logout', logout);
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: "Token is valid"
+ *                   example: Logout successful
+ */
+router.post('/logout', logout);
+
+/**
+ * @swagger
+ * /api/auth/verify:
+ *   get:
+ *     summary: Verificar token de acesso
+ *     tags: [Autenticação]
+ *     responses:
+ *       200:
+ *         description: Token válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Token is valid
  *                 data:
  *                   type: object
  *                   properties:
  *                     user:
  *                       $ref: '#/components/schemas/User'
  *       401:
- *         description: Invalid or expired token
+ *         description: Token inválido ou expirado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/verify', authenticateToken, verifyToken);
 
@@ -265,11 +265,11 @@ router.get('/verify', authenticateToken, verifyToken);
  * @swagger
  * /api/auth/profile:
  *   get:
- *     summary: Get user profile
- *     tags: [User Profile]
+ *     summary: Obter perfil do usuário
+ *     tags: [Perfil]
  *     responses:
  *       200:
- *         description: User profile retrieved successfully
+ *         description: Perfil do usuário
  *         content:
  *           application/json:
  *             schema:
@@ -283,23 +283,16 @@ router.get('/verify', authenticateToken, verifyToken);
  *                   properties:
  *                     user:
  *                       $ref: '#/components/schemas/User'
- *       401:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  *       404:
- *         description: User not found
+ *         description: Usuário não encontrado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Error'
  *   put:
- *     summary: Update user profile
- *     tags: [User Profile]
+ *     summary: Atualizar perfil do usuário
+ *     tags: [Perfil]
  *     requestBody:
- *       required: true
  *       content:
  *         application/json:
  *           schema:
@@ -309,14 +302,14 @@ router.get('/verify', authenticateToken, verifyToken);
  *                 type: string
  *                 minLength: 2
  *                 maxLength: 50
- *                 example: "João Silva Santos"
+ *                 example: João Silva Santos
  *               email:
  *                 type: string
  *                 format: email
- *                 example: "joao.santos@email.com"
+ *                 example: joao.santos@email.com
  *     responses:
  *       200:
- *         description: Profile updated successfully
+ *         description: Perfil atualizado com sucesso
  *         content:
  *           application/json:
  *             schema:
@@ -327,30 +320,18 @@ router.get('/verify', authenticateToken, verifyToken);
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: "Profile updated successfully"
+ *                   example: Profile updated successfully
  *                 data:
  *                   type: object
  *                   properties:
  *                     user:
  *                       $ref: '#/components/schemas/User'
  *       400:
- *         description: Validation failed
+ *         description: Dados inválidos
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       401:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       404:
- *         description: User not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/profile', authenticateToken, getProfile);
 router.put('/profile', authenticateToken, profileUpdateValidation, updateProfile);

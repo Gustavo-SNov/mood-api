@@ -1,7 +1,7 @@
 {
   "name": "mood-tracker-api",
   "version": "1.0.0",
-  "description": "API para rastreamento de humor",
+  "description": "API para rastreamento de humor com documentação Swagger",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -20,6 +20,6 @@
     "jsonwebtoken": "^9.0.2",
     "sqlite3": "^5.1.6",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.0"
   }
 }

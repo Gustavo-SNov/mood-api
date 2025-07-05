@@ -1,14 +1,6 @@
 import express from 'express';
 import { body } from 'express-validator';
-import {
-  getMoods,
-  getMood,
-  createMood,
-  updateMood,
-  deleteMood,
-  getAnalytics,
-  getTrends
-} from '../controllers/moodController.js';
+import {getMoods, getMood, createMood, updateMood, deleteMood, getAnalytics, getTrends} from '../controllers/moodController.js';
 import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -62,72 +54,43 @@ const moodUpdateValidation = [
  * @swagger
  * /api/moods:
  *   get:
- *     summary: Get all mood entries for the authenticated user
- *     tags: [Moods]
+ *     summary: Listar registros de humor do usuário
+ *     tags: [Humor]
  *     parameters:
  *       - in: query
  *         name: startDate
  *         schema:
  *           type: string
  *           format: date
- *         description: Filter moods from this date (YYYY-MM-DD)
+ *         description: Data inicial para filtro (YYYY-MM-DD)
  *       - in: query
  *         name: endDate
  *         schema:
  *           type: string
  *           format: date
- *         description: Filter moods until this date (YYYY-MM-DD)
+ *         description: Data final para filtro (YYYY-MM-DD)
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
  *           default: 50
- *           minimum: 1
- *           maximum: 100
- *         description: Number of entries to return
+ *         description: Número máximo de registros
  *       - in: query
  *         name: offset
  *         schema:
  *           type: integer
  *           default: 0
- *           minimum: 0
- *         description: Number of entries to skip
+ *         description: Número de registros para pular
  *     responses:
  *       200:
- *         description: Mood entries retrieved successfully
+ *         description: Lista de registros de humor
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 data:
- *                   type: object
- *                   properties:
- *                     moods:
- *                       type: array
- *                       items:
- *                         $ref: '#/components/schemas/Mood'
- *                     pagination:
- *                       type: object
- *                       properties:
- *                         limit:
- *                           type: integer
- *                         offset:
- *                           type: integer
- *                         total:
- *                           type: integer
- *       401:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/MoodListResponse'
  *   post:
- *     summary: Create a new mood entry
- *     tags: [Moods]
+ *     summary: Criar novo registro de humor
+ *     tags: [Humor]
  *     requestBody:
  *       required: true
  *       content:
@@ -150,7 +113,7 @@ const moodUpdateValidation = [
  *               notes:
  *                 type: string
  *                 maxLength: 1000
- *                 example: "Dia produtivo no trabalho, consegui finalizar o projeto"
+ *                 example: "Dia produtivo no trabalho"
  *               activities:
  *                 type: array
  *                 items:
@@ -162,41 +125,23 @@ const moodUpdateValidation = [
  *                 example: "2023-12-01"
  *     responses:
  *       201:
- *         description: Mood entry created successfully
+ *         description: Registro de humor criado com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Mood entry created successfully"
- *                 data:
- *                   type: object
- *                   properties:
- *                     mood:
- *                       $ref: '#/components/schemas/Mood'
+ *               $ref: '#/components/schemas/MoodResponse'
  *       400:
- *         description: Validation failed
+ *         description: Dados inválidos
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       401:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Error'
  *       409:
- *         description: Mood entry already exists for this date
+ *         description: Já existe registro para esta data
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/', getMoods);
 router.post('/', moodValidation, createMood);
@@ -205,7 +150,7 @@ router.post('/', moodValidation, createMood);
  * @swagger
  * /api/moods/analytics:
  *   get:
- *     summary: Get mood analytics for the authenticated user
+ *     summary: Obter análises de humor
  *     tags: [Analytics]
  *     parameters:
  *       - in: query
@@ -213,11 +158,10 @@ router.post('/', moodValidation, createMood);
  *         schema:
  *           type: string
  *           default: "30d"
- *           enum: ["7d", "30d", "90d", "365d"]
- *         description: Time range for analytics
+ *         description: "Período para análise (ex: 30d, 60d, 90d)"
  *     responses:
  *       200:
- *         description: Analytics retrieved successfully
+ *         description: Análises de humor
  *         content:
  *           application/json:
  *             schema:
@@ -230,13 +174,7 @@ router.post('/', moodValidation, createMood);
  *                   type: object
  *                   properties:
  *                     analytics:
- *                       $ref: '#/components/schemas/MoodAnalytics'
- *       401:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *                       $ref: '#/components/schemas/Analytics'
  */
 router.get('/analytics', getAnalytics);
 
@@ -244,19 +182,19 @@ router.get('/analytics', getAnalytics);
  * @swagger
  * /api/moods/trends:
  *   get:
- *     summary: Get mood trends for the authenticated user
+ *     summary: Obter tendências de humor
  *     tags: [Analytics]
  *     parameters:
  *       - in: query
  *         name: period
  *         schema:
  *           type: string
+ *           enum: [week, month, year]
  *           default: "week"
- *           enum: ["week", "month", "year"]
- *         description: Period for trend analysis
+ *         description: Período para agrupamento das tendências
  *     responses:
  *       200:
- *         description: Trends retrieved successfully
+ *         description: Tendências de humor
  *         content:
  *           application/json:
  *             schema:
@@ -275,20 +213,13 @@ router.get('/analytics', getAnalytics);
  *                         properties:
  *                           period:
  *                             type: string
- *                             description: Time period identifier
+ *                             example: "2023-12"
  *                           avg_mood:
  *                             type: number
- *                             format: float
- *                             description: Average mood for the period
+ *                             example: 7.5
  *                           entries:
  *                             type: integer
- *                             description: Number of entries in the period
- *       401:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *                             example: 15
  */
 router.get('/trends', getTrends);
 
@@ -296,61 +227,45 @@ router.get('/trends', getTrends);
  * @swagger
  * /api/moods/{id}:
  *   get:
- *     summary: Get a specific mood entry
- *     tags: [Moods]
+ *     summary: Obter registro de humor específico
+ *     tags: [Humor]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: Mood entry ID
+ *         description: ID do registro de humor
  *     responses:
  *       200:
- *         description: Mood entry retrieved successfully
+ *         description: Registro de humor encontrado
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 data:
- *                   type: object
- *                   properties:
- *                     mood:
- *                       $ref: '#/components/schemas/Mood'
- *       401:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       403:
- *         description: Access denied
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/MoodResponse'
  *       404:
- *         description: Mood entry not found
+ *         description: Registro não encontrado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Acesso negado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *   put:
- *     summary: Update a mood entry
- *     tags: [Moods]
+ *     summary: Atualizar registro de humor
+ *     tags: [Humor]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: Mood entry ID
+ *         description: ID do registro de humor
  *     requestBody:
- *       required: true
  *       content:
  *         application/json:
  *           schema:
@@ -365,72 +280,48 @@ router.get('/trends', getTrends);
  *                 type: array
  *                 items:
  *                   type: string
- *                 example: ["feliz", "realizado"]
+ *                 example: ["feliz", "relaxado"]
  *               notes:
  *                 type: string
  *                 maxLength: 1000
- *                 example: "Atualizando as notas do dia"
+ *                 example: "Dia ainda melhor"
  *               activities:
  *                 type: array
  *                 items:
  *                   type: string
- *                 example: ["trabalho", "família", "descanso"]
+ *                 example: ["meditação", "caminhada"]
  *     responses:
  *       200:
- *         description: Mood entry updated successfully
+ *         description: Registro atualizado com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Mood entry updated successfully"
- *                 data:
- *                   type: object
- *                   properties:
- *                     mood:
- *                       $ref: '#/components/schemas/Mood'
+ *               $ref: '#/components/schemas/MoodResponse'
  *       400:
- *         description: Validation failed
+ *         description: Dados inválidos
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       401:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       403:
- *         description: Access denied
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Error'
  *       404:
- *         description: Mood entry not found
+ *         description: Registro não encontrado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Error'
  *   delete:
- *     summary: Delete a mood entry
- *     tags: [Moods]
+ *     summary: Deletar registro de humor
+ *     tags: [Humor]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: Mood entry ID
+ *         description: ID do registro de humor
  *     responses:
  *       200:
- *         description: Mood entry deleted successfully
+ *         description: Registro deletado com sucesso
  *         content:
  *           application/json:
  *             schema:
@@ -441,25 +332,19 @@ router.get('/trends', getTrends);
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: "Mood entry deleted successfully"
- *       401:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       403:
- *         description: Access denied
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *                   example: Mood entry deleted successfully
  *       404:
- *         description: Mood entry not found
+ *         description: Registro não encontrado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Acesso negado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/:id', getMood);
 router.put('/:id', moodUpdateValidation, updateMood);

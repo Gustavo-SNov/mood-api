@@ -1,8 +1,18 @@
 # Mood Tracker API
 
-Uma API completa para rastreamento de humor construída com Node.js, Express e SQLite3.
+Uma API completa para rastreamento de humor construída com Node.js, Express e SQLite3, com documentação interativa Swagger.
 
-## Funcionalidades
+## O que falta:
+- 
+- 
+- 
+- DELETE NO USER
+
+
+
+
+
+## 🚀 Funcionalidades
 
 ### 🔐 Autenticação
 - Registro e login de usuários
@@ -22,7 +32,13 @@ Uma API completa para rastreamento de humor construída com Node.js, Express e S
 - Distribuição de humor
 - Melhores e piores dias
 
-## Instalação
+### 📚 Documentação
+- Swagger UI interativo
+- Documentação completa da API
+- Exemplos de uso
+- Teste direto dos endpoints
+
+## 📦 Instalação
 
 1. Clone o repositório:
 ```bash
@@ -50,7 +66,22 @@ npm run dev
 npm start
 ```
 
-## Endpoints da API
+## 📖 Documentação da API
+
+Após iniciar o servidor, acesse a documentação interativa:
+
+- **Swagger UI**: http://localhost:3000/api-docs
+- **Health Check**: http://localhost:3000/api/health
+
+A documentação Swagger inclui:
+- ✅ Todos os endpoints disponíveis
+- ✅ Esquemas de dados detalhados
+- ✅ Exemplos de requisições e respostas
+- ✅ Teste interativo dos endpoints
+- ✅ Autenticação JWT integrada
+- ✅ Códigos de status e tratamento de erros
+
+## 🛠️ Endpoints da API
 
 ### Autenticação (`/api/auth`)
 
@@ -76,11 +107,12 @@ npm start
 | GET | `/analytics` | Obter análises |
 | GET | `/trends` | Obter tendências |
 
-## Estrutura do Projeto
+## 🏗️ Estrutura do Projeto
 
 ```
 ├── config/
-│   └── database.js          # Configuração do SQLite
+│   ├── database.js          # Configuração do SQLite
+│   └── swagger.js           # Configuração do Swagger
 ├── controllers/
 │   ├── authController.js    # Controladores de autenticação
 │   └── moodController.js    # Controladores de humor
@@ -105,7 +137,7 @@ npm start
 └── README.md
 ```
 
-## Modelos de Dados
+## 📊 Modelos de Dados
 
 ### Usuário
 ```json
@@ -132,9 +164,16 @@ npm start
 }
 ```
 
-## Exemplos de Uso
+## 🧪 Testando a API
 
-### Registro de Usuário
+### Via Swagger UI (Recomendado)
+1. Acesse http://localhost:3000/api-docs
+2. Clique em "Authorize" e insira seu token JWT
+3. Teste qualquer endpoint diretamente na interface
+
+### Via cURL
+
+#### Registro de Usuário
 ```bash
 curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
@@ -145,7 +184,7 @@ curl -X POST http://localhost:3000/api/auth/register \
   }'
 ```
 
-### Login
+#### Login
 ```bash
 curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
@@ -155,7 +194,7 @@ curl -X POST http://localhost:3000/api/auth/login \
   }'
 ```
 
-### Criar Entrada de Humor
+#### Criar Entrada de Humor
 ```bash
 curl -X POST http://localhost:3000/api/moods \
   -H "Content-Type: application/json" \
@@ -168,7 +207,7 @@ curl -X POST http://localhost:3000/api/moods \
   }'
 ```
 
-## Segurança
+## 🔒 Segurança
 
 - ✅ Senhas hasheadas com bcrypt
 - ✅ JWT tokens com expiração
@@ -177,8 +216,9 @@ curl -X POST http://localhost:3000/api/moods \
 - ✅ Helmet para cabeçalhos de segurança
 - ✅ Validação de dados
 - ✅ CORS configurado
+- ✅ Documentação protegida
 
-## Variáveis de Ambiente
+## 🌍 Variáveis de Ambiente
 
 ```env
 PORT=3000
@@ -189,8 +229,20 @@ JWT_EXPIRES_IN=1h
 JWT_REFRESH_EXPIRES_IN=7d
 DB_PATH=./database/mood_tracker.db
 CORS_ORIGIN=http://localhost:5173
+API_URL=http://localhost:3000
 ```
 
-## Licença
+## 📝 Licença
 
 MIT
+
+---
+
+## 🎯 Próximos Passos
+
+1. **Acesse a documentação**: http://localhost:3000/api-docs
+2. **Teste os endpoints** diretamente no Swagger UI
+3. **Integre com seu frontend** usando os exemplos fornecidos
+4. **Monitore** via health check: http://localhost:3000/api/health
+
+A documentação Swagger torna a API muito mais fácil de entender e usar! 🚀
