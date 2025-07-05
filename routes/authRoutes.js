@@ -7,7 +7,8 @@ import {
   logout,
   verifyToken,
   getProfile,
-  updateProfile
+  updateProfile,
+  deleteAccount
 } from '../controllers/authController.js';
 import { authenticateToken } from '../middleware/auth.js';
 
@@ -335,5 +336,6 @@ router.get('/verify', authenticateToken, verifyToken);
  */
 router.get('/profile', authenticateToken, getProfile);
 router.put('/profile', authenticateToken, profileUpdateValidation, updateProfile);
+router.delete('/profile', authenticateToken, deleteAccount);
 
 export default router;

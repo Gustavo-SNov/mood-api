@@ -227,7 +227,7 @@ export const updateProfile = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: 'A validação falhou',
+        message: 'Validation failed',
         errors: errors.array()
       });
     }
