@@ -20,7 +20,7 @@ export const errorResponse = (res, message = 'Internal Server Error', statusCode
 export const validationErrorResponse = (res, errors) => {
   return res.status(400).json({
     success: false,
-    message: 'Validation failed',
+    message: 'A validação falhou',
     errors: errors.array(),
     timestamp: new Date().toISOString()
   });

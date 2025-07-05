@@ -27,7 +27,7 @@ export const register = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: 'Validation failed',
+        message: 'A validação falhou',
         errors: errors.array()
       });
     }
@@ -74,7 +74,7 @@ export const login = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: 'Validation failed',
+        message: 'A validação falhou',
         errors: errors.array()
       });
     }
@@ -227,7 +227,7 @@ export const updateProfile = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: 'Validation failed',
+        message: 'A validação falhou',
         errors: errors.array()
       });
     }

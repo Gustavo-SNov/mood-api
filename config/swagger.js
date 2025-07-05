@@ -70,7 +70,7 @@ const options = {
               type: 'integer',
               description: 'ID único do registro de humor'
             },
-            mood_value: {
+            rating: {
               type: 'integer',
               minimum: 1,
               maximum: 10,
@@ -85,7 +85,7 @@ const options = {
               description: 'Lista de emoções',
               example: ['feliz', 'motivado', 'energético']
             },
-            notes: {
+            note: {
               type: 'string',
               description: 'Notas adicionais sobre o humor',
               example: 'Dia produtivo no trabalho'

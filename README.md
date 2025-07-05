@@ -3,13 +3,16 @@
 Uma API completa para rastreamento de humor construída com Node.js, Express e SQLite3, com documentação interativa Swagger.
 
 ## O que falta:
+- Tags são atividades
+- Atividades são retornados -> Array de Tags 
+- Cada Tag: Tag = { Icone, Nome, Grupo}
+- Tag.Grupo não será retornado na Requisição 
+- Grupo é uma FK da Tag
+- Criar GET para Grupo de Tags
 - 
-- 
-- 
+- Login retorna um Token somente e apenas
+- Register não retorna nada, apenas uma mensagem de sucesso!
 - DELETE NO USER
-
-
-
 
 
 ## 🚀 Funcionalidades
@@ -154,9 +157,9 @@ A documentação Swagger inclui:
 ```json
 {
   "id": 1,
-  "mood_value": 8,
+  "rating": 8,
   "emotions": ["feliz", "motivado"],
-  "notes": "Dia produtivo no trabalho",
+  "note": "Dia produtivo no trabalho",
   "activities": ["trabalho", "exercício"],
   "date": "2023-01-01",
   "created_at": "2023-01-01T00:00:00.000Z",
@@ -200,9 +203,9 @@ curl -X POST http://localhost:3000/api/moods \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
-    "mood_value": 8,
+    "rating": 8,
     "emotions": ["feliz", "motivado"],
-    "notes": "Dia produtivo",
+    "note": "Dia produtivo",
     "activities": ["trabalho", "exercício"]
   }'
 ```

@@ -54,7 +54,7 @@ export const getMood = async (req, res, next) => {
     if (!mood) {
       return res.status(404).json({
         success: false,
-        message: 'Mood entry not found'
+        message: 'Entrada de humor não encontrada'
       });
     }
 
@@ -62,7 +62,7 @@ export const getMood = async (req, res, next) => {
     if (mood.user_id !== userId) {
       return res.status(403).json({
         success: false,
-        message: 'Access denied'
+        message: 'Acesso negado'
       });
     }
 
@@ -84,13 +84,13 @@ export const createMood = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: 'Validation failed',
+        message: 'Falha na validação',
         errors: errors.array()
       });
     }
 
     const userId = req.user.id;
-    const { mood_value, emotions, notes, activities, date } = req.body;
+    const { rating, emotions, note, activities, date } = req.body;
 
     // Check if mood entry already exists for this date
     const existingMood = await Mood.findByUserIdAndDate(userId, date || new Date().toISOString().split('T')[0]);
@@ -103,9 +103,9 @@ export const createMood = async (req, res, next) => {
 
     const moodData = {
       user_id: userId,
-      mood_value,
+      rating,
       emotions,
-      notes,
+      note,
       activities,
       date: date || new Date().toISOString().split('T')[0]
     };
@@ -131,7 +131,7 @@ export const updateMood = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: 'Validation failed',
+        message: 'A validação falhou',
         errors: errors.array()
       });
     }
@@ -144,7 +144,7 @@ export const updateMood = async (req, res, next) => {
     if (!mood) {
       return res.status(404).json({
         success: false,
-        message: 'Mood entry not found'
+        message: 'Entrada de humor não encontrada'
       });
     }
 
@@ -152,7 +152,7 @@ export const updateMood = async (req, res, next) => {
     if (mood.user_id !== userId) {
       return res.status(403).json({
         success: false,
-        message: 'Access denied'
+        message: 'Acesso negado.'
       });
     }
 
@@ -160,7 +160,7 @@ export const updateMood = async (req, res, next) => {
 
     res.json({
       success: true,
-      message: 'Mood entry updated successfully',
+      message: 'Entrada de humor atualizada com sucesso!',
       data: {
         mood: updatedMood.toJSON()
       }
@@ -181,7 +181,7 @@ export const deleteMood = async (req, res, next) => {
     if (!mood) {
       return res.status(404).json({
         success: false,
-        message: 'Mood entry not found'
+        message: 'Entrada de humor não encontrada'
       });
     }
 
@@ -189,7 +189,7 @@ export const deleteMood = async (req, res, next) => {
     if (mood.user_id !== userId) {
       return res.status(403).json({
         success: false,
-        message: 'Access denied'
+        message: 'Acesso negado'
       });
     }
 

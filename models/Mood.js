@@ -4,9 +4,9 @@ export class Mood {
   constructor(data) {
     this.id = data.id;
     this.user_id = data.user_id;
-    this.mood_value = data.mood_value;
+    this.rating = data.rating;
     this.emotions = data.emotions ? JSON.parse(data.emotions) : [];
-    this.notes = data.notes;
+    this.note = data.note;
     this.activities = data.activities ? JSON.parse(data.activities) : [];
     this.date = data.date;
     this.created_at = data.created_at;
@@ -14,15 +14,15 @@ export class Mood {
   }
 
   static async create(moodData) {
-    const { user_id, mood_value, emotions, notes, activities, date } = moodData;
+    const { user_id, rating, emotions, note, activities, date } = moodData;
     
     const result = await runQuery(
-      'INSERT INTO moods (user_id, mood_value, emotions, notes, activities, date) VALUES (?, ?, ?, ?, ?, ?)',
+      'INSERT INTO moods (user_id, rating, emotions, note, activities, date) VALUES (?, ?, ?, ?, ?, ?)',
       [
         user_id,
-        mood_value,
+        rating,
         emotions ? JSON.stringify(emotions) : null,
-        notes,
+        note,
         activities ? JSON.stringify(activities) : null,
         date
       ]
@@ -78,7 +78,7 @@ export class Mood {
   }
 
   async update(updates) {
-    const allowedUpdates = ['mood_value', 'emotions', 'notes', 'activities'];
+    const allowedUpdates = ['rating', 'emotions', 'note', 'activities'];
     const validUpdates = {};
     
     for (const key of allowedUpdates) {
@@ -116,7 +116,7 @@ export class Mood {
     startDate.setDate(startDate.getDate() - days);
 
     const moods = await getAllRows(
-      'SELECT mood_value, date FROM moods WHERE user_id = ? AND date >= ? ORDER BY date ASC',
+      'SELECT rating, date FROM moods WHERE user_id = ? AND date >= ? ORDER BY date ASC',
       [userId, startDate.toISOString().split('T')[0]]
     );
 
@@ -134,12 +134,12 @@ export class Mood {
     }
 
     // Calculate average mood
-    const totalMoodValue = moods.reduce((sum, mood) => sum + mood.mood_value, 0);
+    const totalMoodValue = moods.reduce((sum, mood) => sum + mood.rating, 0);
     analytics.averageMood = Math.round((totalMoodValue / moods.length) * 100) / 100;
 
     // Calculate mood distribution
     moods.forEach(mood => {
-      analytics.moodDistribution[mood.mood_value] = (analytics.moodDistribution[mood.mood_value] || 0) + 1;
+      analytics.moodDistribution[mood.rating] = (analytics.moodDistribution[mood.rating] || 0) + 1;
     });
 
     // Find best and worst days
@@ -147,12 +147,12 @@ export class Mood {
     let worstMood = 11;
     
     moods.forEach(mood => {
-      if (mood.mood_value > bestMood) {
-        bestMood = mood.mood_value;
+      if (mood.rating > bestMood) {
+        bestMood = mood.rating;
         analytics.bestDay = mood.date;
       }
-      if (mood.mood_value < worstMood) {
-        worstMood = mood.mood_value;
+      if (mood.rating < worstMood) {
+        worstMood = mood.rating;
         analytics.worstDay = mood.date;
       }
     });
@@ -164,7 +164,7 @@ export class Mood {
       if (!weeklyData[week]) {
         weeklyData[week] = { total: 0, count: 0 };
       }
-      weeklyData[week].total += mood.mood_value;
+      weeklyData[week].total += mood.rating;
       weeklyData[week].count += 1;
     });
 
@@ -185,7 +185,7 @@ export class Mood {
         query = `
           SELECT 
             date,
-            AVG(mood_value) as avg_mood,
+            AVG(rating) as avg_mood,
             COUNT(*) as entries
           FROM moods 
           WHERE user_id = ? AND date >= date('now', '-4 weeks')
@@ -197,7 +197,7 @@ export class Mood {
         query = `
           SELECT 
             strftime('%Y-%m', date) as period,
-            AVG(mood_value) as avg_mood,
+            AVG(rating) as avg_mood,
             COUNT(*) as entries
           FROM moods 
           WHERE user_id = ? AND date >= date('now', '-6 months')
@@ -209,7 +209,7 @@ export class Mood {
         query = `
           SELECT 
             strftime('%Y', date) as period,
-            AVG(mood_value) as avg_mood,
+            AVG(rating) as avg_mood,
             COUNT(*) as entries
           FROM moods 
           WHERE user_id = ?
@@ -231,9 +231,9 @@ export class Mood {
   toJSON() {
     return {
       id: this.id,
-      mood_value: this.mood_value,
+      rating: this.rating,
       emotions: this.emotions,
-      notes: this.notes,
+      note: this.note,
       activities: this.activities,
       date: this.date,
       created_at: this.created_at,

@@ -10,17 +10,17 @@ router.use(authenticateToken);
 
 // Validation rules
 const moodValidation = [
-  body('mood_value')
+  body('rating')
     .isInt({ min: 1, max: 10 })
     .withMessage('Mood value must be between 1 and 10'),
   body('emotions')
     .optional()
     .isArray()
     .withMessage('Emotions must be an array'),
-  body('notes')
+  body('note')
     .optional()
     .isLength({ max: 1000 })
-    .withMessage('Notes cannot exceed 1000 characters'),
+    .withMessage('note cannot exceed 1000 characters'),
   body('activities')
     .optional()
     .isArray()
@@ -32,7 +32,7 @@ const moodValidation = [
 ];
 
 const moodUpdateValidation = [
-  body('mood_value')
+  body('rating')
     .optional()
     .isInt({ min: 1, max: 10 })
     .withMessage('Mood value must be between 1 and 10'),
@@ -40,10 +40,10 @@ const moodUpdateValidation = [
     .optional()
     .isArray()
     .withMessage('Emotions must be an array'),
-  body('notes')
+  body('note')
     .optional()
     .isLength({ max: 1000 })
-    .withMessage('Notes cannot exceed 1000 characters'),
+    .withMessage('note cannot exceed 1000 characters'),
   body('activities')
     .optional()
     .isArray()
@@ -98,9 +98,9 @@ const moodUpdateValidation = [
  *           schema:
  *             type: object
  *             required:
- *               - mood_value
+ *               - rating
  *             properties:
- *               mood_value:
+ *               rating:
  *                 type: integer
  *                 minimum: 1
  *                 maximum: 10
@@ -110,7 +110,7 @@ const moodUpdateValidation = [
  *                 items:
  *                   type: string
  *                 example: ["feliz", "motivado", "energético"]
- *               notes:
+ *               note:
  *                 type: string
  *                 maxLength: 1000
  *                 example: "Dia produtivo no trabalho"
@@ -271,7 +271,7 @@ router.get('/trends', getTrends);
  *           schema:
  *             type: object
  *             properties:
- *               mood_value:
+ *               rating:
  *                 type: integer
  *                 minimum: 1
  *                 maximum: 10
@@ -281,7 +281,7 @@ router.get('/trends', getTrends);
  *                 items:
  *                   type: string
  *                 example: ["feliz", "relaxado"]
- *               notes:
+ *               note:
  *                 type: string
  *                 maxLength: 1000
  *                 example: "Dia ainda melhor"
