@@ -1,8 +1,7 @@
-import { generateTokens } from '../config/jwt.js';
-import { User } from '../models/User.js';
-import { RefreshToken } from '../models/RefreshToken.js';
-import { validationResult } from 'express-validator';
-
+import { generateTokens } from "../config/jwt.js";
+import { User } from "../models/User.js";
+import { RefreshToken } from "../models/RefreshToken.js";
+import { validationResult } from "express-validator";
 
 // Registrar novo usuário
 export const register = async (req, res, next) => {
@@ -10,7 +9,7 @@ export const register = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        message: errors.array()[0]?.msg || 'A validação falhou'
+        message: errors.array()[0]?.msg || "A validação falhou",
       });
     }
 
@@ -20,7 +19,7 @@ export const register = async (req, res, next) => {
     const existingUser = await User.findByEmail(email);
     if (existingUser) {
       return res.status(409).json({
-        message: 'Não é possível criar um usuário com esse e-mail'
+        message: "Não é possível criar um usuário com esse e-mail",
       });
     }
 
@@ -37,7 +36,7 @@ export const register = async (req, res, next) => {
     res.status(201).json({
       user: user.toJSON(),
       token: accessToken,
-      refreshToken
+      refreshToken,
     });
   } catch (error) {
     next(error);
@@ -50,7 +49,7 @@ export const login = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        message: errors.array()[0]?.msg || 'A validação falhou'
+        message: errors.array()[0]?.msg || "A validação falhou",
       });
     }
 
@@ -60,7 +59,7 @@ export const login = async (req, res, next) => {
     const user = await User.findByEmail(email);
     if (!user) {
       return res.status(401).json({
-        message: 'Credenciais inválidas'
+        message: "Credenciais inválidas",
       });
     }
 
@@ -68,7 +67,7 @@ export const login = async (req, res, next) => {
     const isPasswordValid = await user.verifyPassword(password);
     if (!isPasswordValid) {
       return res.status(401).json({
-        message: 'Credenciais inválidas'
+        message: "Credenciais inválidas",
       });
     }
 
@@ -81,9 +80,9 @@ export const login = async (req, res, next) => {
     await RefreshToken.create(user.id, refreshToken, expiresAt);
 
     res.json({
-        user: user.toJSON(),
-        token: accessToken,
-        refreshToken
+      user: user.toJSON(),
+      token: accessToken,
+      refreshToken,
     });
   } catch (error) {
     next(error);

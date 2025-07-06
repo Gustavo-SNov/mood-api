@@ -1,20 +1,20 @@
-import sqlite3 from 'sqlite3';
-import {promises as fs} from 'fs';
-import path from 'path';
-import {fileURLToPath} from 'url';
+import sqlite3 from "sqlite3";
+import { promises as fs } from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DB_PATH = process.env.DB_PATH || './database/mood_tracker.db';
+const DB_PATH = process.env.DB_PATH || "./database/mood_tracker.db";
 
 let db;
 
 export const getDatabase = () => {
-    if (!db) {
-        throw new Error('Banco de dados não iniciado');
-    }
-    return db;
+  if (!db) {
+    throw new Error("Banco de dados não iniciado");
+  }
+  return db;
 };
 
 export const initDatabase = async () => {
@@ -23,16 +23,16 @@ export const initDatabase = async () => {
         const dbDir = path.dirname(DB_PATH);
         await fs.mkdir(dbDir, {recursive: true});
 
-        // Initialize SQLite database
-        db = new sqlite3.Database(DB_PATH, (err) => {
-            if (err) {
-                console.error('Error opening database:', err);
-                throw err;
-            }
-        });
+    // Initialize SQLite database
+    db = new sqlite3.Database(DB_PATH, (err) => {
+      if (err) {
+        console.error("Error opening database:", err);
+        throw err;
+      }
+    });
 
-        // Enable foreign keys
-        await runQuery('PRAGMA foreign_keys = ON');
+    // Enable foreign keys
+    await runQuery("PRAGMA foreign_keys = ON");
 
         // Create tables
         await createTables();
@@ -40,11 +40,11 @@ export const initDatabase = async () => {
         // Função de preenchimento de informações DEFAULT no Banco de Dados
         await seedDatabase();
 
-        console.log('Database connected successfully');
-    } catch (error) {
-        console.error('Database initialization error:', error);
-        throw error;
-    }
+    console.log("Database connected successfully");
+  } catch (error) {
+    console.error("Database initialization error:", error);
+    throw error;
+  }
 };
 
 const createTables = async () => {
@@ -222,101 +222,72 @@ const createTables = async () => {
 
 // NOVO: Função de seeding integrada ao arquivo do banco de dados
 const seedDatabase = async () => {
-    try {
-        // 1. Verifica se a tabela de grupos já tem dados
-        const checkRow = await getRow('SELECT COUNT(id) as count FROM group_tag');
-        if (checkRow && checkRow.count > 0) {
-            console.log('Database already seeded. Skipping.');
-            return;
-        }
-
-        console.log('Database is empty. Seeding initial data...');
-
-        // 2. Define os dados iniciais, agora com nomes de ícones para cada tag
-        const initialData = [
-            {
-                group_name: 'Atividades',
-                tags: [
-                    { name: 'Trabalho', icon: 'work' },
-                    { name: 'Estudo', icon: 'school' },
-                    { name: 'Exercício', icon: 'fitness_center' },
-                    { name: 'Lazer', icon: 'sports_esports' }
-                ]
-            },
-            {
-                group_name: 'Emoções',
-                tags: [
-                    { name: 'Feliz', icon: 'sentiment_very_satisfied' },
-                    { name: 'Triste', icon: 'sentiment_sad' },
-                    { name: 'Ansioso(a)', icon: 'sentiment_anxious' },
-                    { name: 'Calmo(a)', icon: 'self_care' },
-                    { name: 'Bravo', icon: 'sentiment_angry' },
-                    { name: 'Desapontado', icon: 'sentiment_dissatisfied' },
-                    { name: 'Preocupado', icon: 'sentiment_worried' },
-                    { name: 'Assustado', icon: 'pan_tool_alt' },
-                    { name: 'Frustrado', icon: 'sentiment_frustrated' },
-                    { name: 'Estressado', icon: 'sick' }
-                ]
-            },
-            {
-                group_name: 'Social',
-                tags: [
-                    { name: 'Amigos', icon: 'group' },
-                    { name: 'Família', icon: 'family_restroom' },
-                    { name: 'Sozinho(a)', icon: 'person' },
-                    { name: 'Festa', icon: 'celebration' }
-                ]
-            },
-            {
-                group_name: 'Clima',
-                tags: [
-                    { name: 'Ensolarado', icon: 'sunny' },
-                    { name: 'Chuvoso', icon: 'rainy' },
-                    { name: 'Nublado', icon: 'cloudy' }
-                ]
-            },
-            {
-                group_name: 'Saúde',
-                tags: [
-                    { name: 'Dormi bem', icon: 'bed' },
-                    { name: 'Comi bem', icon: 'restaurant' },
-                    { name: 'Doente', icon: 'sick' }
-                ]
-            }
-        ];
-
-        // 3. Insere os dados com a lógica corrigida
-        for (const groupData of initialData) {
-            const { group_name, tags } = groupData;
-            const groupResult = await runQuery('INSERT INTO group_tag (group_name) VALUES (?)', [group_name]);
-            const groupId = groupResult.id;
-
-            if (tags && tags.length > 0) {
-                // Itera sobre a lista de objetos de tag (que agora contêm nome e ícone)
-                for (const tag of tags) {
-                    // Corrige o comando INSERT para incluir 3 colunas e 3 valores
-                    await runQuery('INSERT INTO tag (tag_name, icon, group_id) VALUES (?, ?, ?)', [tag.name, tag.icon, groupId]);
-                }
-            }
-        }
-        console.log('INSERTS de geração de GROUP_TAGS e TAGS criados com sucesso.');
-
-    } catch (error) {
-        console.error('Erro durante a inserção de informações DEFAULT:', error);
+  try {
+    // 1. Verifica se a tabela de grupos já tem dados
+    const checkRow = await getRow(
+      "SELECT COUNT(id) as count FROM group_tag WHERE id <> 1",
+    );
+    if (checkRow && checkRow.count > 0) {
+      console.log("Database already seeded. Skipping.");
+      return;
     }
-}
+
+    console.log("Database is empty. Seeding initial data...");
+
+    // 2. Define os dados iniciais
+    const initialData = [
+      {
+        group_name: "Atividades",
+        tags: ["Trabalho", "Estudo", "Exercício", "Lazer"],
+      },
+      {
+        group_name: "Emoções",
+        tags: ["Feliz", "Triste", "Ansioso(a)", "Calmo(a)"],
+      },
+      {
+        group_name: "Social",
+        tags: ["Amigos", "Família", "Sozinho(a)", "Festa"],
+      },
+      { group_name: "Clima", tags: ["Ensolarado", "Chuvoso", "Nublado"] },
+      { group_name: "Saúde", tags: ["Dormi bem", "Comi bem", "Doente"] },
+    ];
+
+    // 3. Insere os dados
+    for (const groupData of initialData) {
+      const { group_name, tags } = groupData;
+      const groupResult = await runQuery(
+        "INSERT INTO group_tag (group_name) VALUES (?)",
+        [group_name],
+      );
+      const groupId = groupResult.id;
+
+      if (tags && tags.length > 0) {
+        for (const tagName of tags) {
+          await runQuery("INSERT INTO tag (tag_name, group_id) VALUES (?, ?)", [
+            tagName,
+            groupId,
+          ]);
+        }
+      }
+    }
+    console.log("INSERTS de geração de GROUP_TAGS e TAGS criados.");
+  } catch (error) {
+    console.error("Erro durante a inserção de informações DEFAULT:", error);
+    // Não relança o erro para não impedir a inicialização principal do app
+  }
+};
 
 // Helper function to run queries with Promise
 export const runQuery = (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-        db.run(sql, params, function (err) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve({id: this.lastID, changes: this.changes});
-            }
-        });
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve({ id: this.lastID, changes: this.changes });
+      }
     });
+  });
 };
 
 // Helper function to get a single row
@@ -347,13 +318,13 @@ export const getAllRows = (sql, params = []) => {
 
 // Close database connection
 export const closeDatabase = () => {
-    if (db) {
-        db.close((err) => {
-            if (err) {
-                console.error('Erro ao fechar o banco de dados:', err);
-            } else {
-                console.log('Banco de dados desconectado');
-            }
-        });
-    }
+  if (db) {
+    db.close((err) => {
+      if (err) {
+        console.error("Erro ao fechar o banco de dados:", err);
+      } else {
+        console.log("Banco de dados desconectado");
+      }
+    });
+  }
 };

@@ -1,6 +1,10 @@
-import express from 'express';
-import { getAllTags, getTagById, getGroupsWithTags } from '../controllers/tagController.js';
-import { authenticateToken } from '../middleware/auth.js';
+import express from "express";
+import {
+  getAllTags,
+  getTagById,
+  getGroupsWithTags,
+} from "../controllers/tagController.js";
+import { authenticateToken } from "../middleware/auth.js";
 
 const router = express.Router();
 

@@ -1,5 +1,5 @@
-import bcrypt from 'bcryptjs';
-import { runQuery, getRow, getAllRows } from '../config/database.js';
+import bcrypt from "bcryptjs";
+import { runQuery, getRow, getAllRows } from "../config/database.js";
 
 export class User {
   constructor(data) {
@@ -7,18 +7,18 @@ export class User {
     this.name = data.name;
     this.email = data.email;
     this.password = data.password;
-    this.created_at = data.created_at;
-    this.updated_at = data.updated_at;
+    this.createdAt = data.created_at;
+    this.updatedAt = data.updated_at;
   }
 
   static async create(userData) {
     const { name, email, password } = userData;
-    
+
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
-    
+
     const result = await runQuery(
-      'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
+      "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
       [name, email, hashedPassword]
     );
 
@@ -26,24 +26,26 @@ export class User {
   }
 
   static async findById(id) {
-    const user = await getRow('SELECT * FROM users WHERE id = ?', [id]);
+    const user = await getRow("SELECT * FROM users WHERE id = ?", [id]);
     return user ? new User(user) : null;
   }
 
   static async findByEmail(email) {
-    const user = await getRow('SELECT * FROM users WHERE email = ?', [email]);
+    const user = await getRow("SELECT * FROM users WHERE email = ?", [email]);
     return user ? new User(user) : null;
   }
 
   static async findAll() {
-    const users = await getAllRows('SELECT * FROM users ORDER BY created_at DESC');
-    return users.map(user => new User(user));
+    const users = await getAllRows(
+      "SELECT * FROM users ORDER BY created_at DESC"
+    );
+    return users.map((user) => new User(user));
   }
 
   async update(updates) {
-    const allowedUpdates = ['name', 'email'];
+    const allowedUpdates = ["name", "email"];
     const validUpdates = {};
-    
+
     for (const key of allowedUpdates) {
       if (updates[key] !== undefined) {
         validUpdates[key] = updates[key];
@@ -54,7 +56,9 @@ export class User {
       return this;
     }
 
-    const setClause = Object.keys(validUpdates).map(key => `${key} = ?`).join(', ');
+    const setClause = Object.keys(validUpdates)
+      .map((key) => `${key} = ?`)
+      .join(", ");
     const values = [...Object.values(validUpdates), this.id];
 
     await runQuery(
@@ -67,9 +71,9 @@ export class User {
 
   async updatePassword(newPassword) {
     const hashedPassword = await bcrypt.hash(newPassword, 12);
-    
+
     await runQuery(
-      'UPDATE users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      "UPDATE users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
       [hashedPassword, this.id]
     );
   }
@@ -79,11 +83,16 @@ export class User {
   }
 
   async delete() {
-    await runQuery('DELETE FROM users WHERE id = ?', [this.id]);
+    await runQuery("DELETE FROM users WHERE id = ?", [this.id]);
   }
 
   toJSON() {
-    const { password, ...userWithoutPassword } = this;
-    return userWithoutPassword;
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
   }
 }
