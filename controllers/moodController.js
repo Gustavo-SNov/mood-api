@@ -117,7 +117,7 @@ export const updateMood = async (req, res, next) => {
     // Check if mood belongs to user
     if (mood.user_id !== userId) {
       return res.status(403).json({
-        message: 'Acesso negado.'
+        message: 'Acesso negado'
       });
     }
 

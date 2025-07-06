@@ -26,8 +26,7 @@ export const register = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        message: 'A validação falhou',
-        errors: errors.array()
+        message: errors.array()[0]?.msg || 'A validação falhou'
       });
     }
 
@@ -67,8 +66,7 @@ export const login = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        message: 'A validação falhou',
-        errors: errors.array()
+        message: errors.array()[0]?.msg || 'A validação falhou'
       });
     }
 
@@ -198,8 +196,7 @@ export const updateProfile = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        message: 'Validação falhou',
-        errors: errors.array()
+        message: errors.array()[0]?.msg || 'A validação falhou'
       });
     }
 
@@ -209,7 +206,7 @@ export const updateProfile = async (req, res, next) => {
         message: 'Usuário não encontrado'
       });
     }
-    
+
     await user.update(req.body);
   } catch (error) {
     next(error);

@@ -18,26 +18,26 @@ const registerValidation = [
   body('name')
     .trim()
     .isLength({ min: 2, max: 50 })
-    .withMessage('Name must be between 2 and 50 characters'),
+    .withMessage('Nome deve ter entre 2 e 50 caracteres'),
   body('email')
     .isEmail()
     .normalizeEmail()
-    .withMessage('Please provide a valid email'),
+    .withMessage('O e-mail precisa ser válido'),
   body('password')
     .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters long')
+    .withMessage('Senha precisa ter ao minímo 6 caracteres')
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number')
+    .withMessage('Senha precisa conter ao menos uma letra maiúscula, uma minúscula, e um número')
 ];
 
 const loginValidation = [
   body('email')
     .isEmail()
     .normalizeEmail()
-    .withMessage('Please provide a valid email'),
+    .withMessage('E-mail inválido'),
   body('password')
     .notEmpty()
-    .withMessage('Password is required')
+    .withMessage('Senha não informada')
 ];
 
 const profileUpdateValidation = [
@@ -45,7 +45,7 @@ const profileUpdateValidation = [
     .optional()
     .trim()
     .isLength({ min: 2, max: 50 })
-    .withMessage('Name must be between 2 and 50 characters'),
+    .withMessage('Nome deve ter entre 2 e 50 caracteres'),
   body('email')
     .optional()
     .isEmail()
