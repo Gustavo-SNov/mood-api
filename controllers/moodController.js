@@ -77,7 +77,6 @@ export const getMood = async (req, res, next) => {
   }
 };
 
-// Create new mood entry
 export const createMood = async (req, res, next) => {
   try {
     const errors = validationResult(req);
@@ -90,10 +89,12 @@ export const createMood = async (req, res, next) => {
     }
 
     const userId = req.user.id;
-    const { rating, emotions, note, activities, date } = req.body;
+    const { rating, note, date, tag_ids } = req.body;
 
-    // Check if mood entry already exists for this date
-    const existingMood = await Mood.findByUserIdAndDate(userId, date || new Date().toISOString().split('T')[0]);
+    const moodDate = date || new Date().toISOString().split('T')[0];
+
+    // Verifica se já existe um mood para essa data
+    const existingMood = await Mood.findByUserIdAndDate(userId, moodDate);
     if (existingMood) {
       return res.status(409).json({
         success: false,
@@ -104,10 +105,9 @@ export const createMood = async (req, res, next) => {
     const moodData = {
       user_id: userId,
       rating,
-      emotions,
       note,
-      activities,
-      date: date || new Date().toISOString().split('T')[0]
+      date: moodDate,
+      tag_ids: Array.isArray(tag_ids) ? tag_ids : []
     };
 
     const mood = await Mood.create(moodData);
@@ -123,6 +123,7 @@ export const createMood = async (req, res, next) => {
     next(error);
   }
 };
+
 
 // Update mood entry
 export const updateMood = async (req, res, next) => {
@@ -204,7 +205,6 @@ export const deleteMood = async (req, res, next) => {
   }
 };
 
-// Get mood analytics
 export const getAnalytics = async (req, res, next) => {
   try {
     const userId = req.user.id;
@@ -223,13 +223,12 @@ export const getAnalytics = async (req, res, next) => {
   }
 };
 
-// Get mood trends
 export const getTrends = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { period = 'week' } = req.query;
+    const { range = '30d' } = req.query;
 
-    const trends = await Mood.getTrends(userId, period);
+    const trends = await Mood.getTrends(userId, range);
 
     res.json({
       success: true,

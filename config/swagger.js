@@ -77,26 +77,18 @@ const options = {
               description: 'Valor do humor de 1 a 10',
               example: 8
             },
-            emotions: {
-              type: 'array',
-              items: {
-                type: 'string'
-              },
-              description: 'Lista de emoções',
-              example: ['feliz', 'motivado', 'energético']
-            },
             note: {
               type: 'string',
               description: 'Notas adicionais sobre o humor',
               example: 'Dia produtivo no trabalho'
             },
-            activities: {
+            tag_ids: {
               type: 'array',
               items: {
-                type: 'string'
+                type: 'integer'
               },
-              description: 'Atividades realizadas',
-              example: ['trabalho', 'exercício', 'leitura']
+              description: 'Lista de IDs das tags associadas ao humor',
+              example: [1, 3, 7]
             },
             date: {
               type: 'string',
@@ -199,6 +191,100 @@ const options = {
                     }
                   }
                 }
+              }
+            }
+          }
+        },
+        Tag: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'integer',
+              description: 'ID da tag'
+            },
+            tag_name: {
+              type: 'string',
+              description: 'Nome da tag',
+              example: 'Foco'
+            },
+            group_id: {
+              type: 'integer',
+              description: 'ID do grupo ao qual a tag pertence'
+            }
+          }
+        },
+
+        TagResponse: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean',
+              example: true
+            },
+            data: {
+              $ref: '#/components/schemas/Tag'
+            }
+          }
+        },
+
+        TagListResponse: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean',
+              example: true
+            },
+            data: {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/Tag'
+              }
+            }
+          }
+        },
+
+        GroupWithTags: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'integer',
+              description: 'ID do grupo'
+            },
+            group_name: {
+              type: 'string',
+              description: 'Nome do grupo',
+              example: 'Trabalho'
+            },
+            tags: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: {
+                    type: 'integer',
+                    description: 'ID da tag'
+                  },
+                  tag_name: {
+                    type: 'string',
+                    description: 'Nome da tag'
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        GroupTagListResponse: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean',
+              example: true
+            },
+            data: {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/GroupWithTags'
               }
             }
           }

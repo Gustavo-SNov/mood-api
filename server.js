@@ -12,6 +12,7 @@ import { specs, swaggerUi } from './config/swagger.js';
 // Import routes
 import authRoutes from './routes/authRoutes.js';
 import moodRoutes from './routes/moodRoutes.js';
+import tagsRoutes from './routes/tagsRoutes.js';
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler.js';
@@ -83,6 +84,7 @@ app.get('/api/health', (req, res) => {
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/moods', moodRoutes);
+app.use('/api/tags', tagsRoutes);
 
 // Redirect root to documentation
 app.get('/', (req, res) => {

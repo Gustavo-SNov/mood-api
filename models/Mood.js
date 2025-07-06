@@ -5,42 +5,45 @@ export class Mood {
     this.id = data.id;
     this.user_id = data.user_id;
     this.rating = data.rating;
-    this.emotions = data.emotions ? JSON.parse(data.emotions) : [];
     this.note = data.note;
-    this.activities = data.activities ? JSON.parse(data.activities) : [];
     this.date = data.date;
     this.created_at = data.created_at;
     this.updated_at = data.updated_at;
+    this.tags = data.tags || [];
   }
 
   static async create(moodData) {
-    const { user_id, rating, emotions, note, activities, date } = moodData;
-    
+    const { user_id, rating, note, date, tag_ids = [] } = moodData;
+
     const result = await runQuery(
-      'INSERT INTO moods (user_id, rating, emotions, note, activities, date) VALUES (?, ?, ?, ?, ?, ?)',
-      [
-        user_id,
-        rating,
-        emotions ? JSON.stringify(emotions) : null,
-        note,
-        activities ? JSON.stringify(activities) : null,
-        date
-      ]
+      'INSERT INTO moods (user_id, rating, note, date) VALUES (?, ?, ?, ?)',
+      [user_id, rating, note, date]
     );
 
-    return await Mood.findById(result.id);
+    const moodId = result.id;
+
+    for (const tagId of tag_ids) {
+      await runQuery(
+        'INSERT INTO mood_tag (mood_id, tag_id) VALUES (?, ?)',
+        [moodId, tagId]
+      );
+    }
+
+    return await Mood.findById(moodId);
   }
 
   static async findById(id) {
     const mood = await getRow('SELECT * FROM moods WHERE id = ?', [id]);
-    return mood ? new Mood(mood) : null;
+    if (!mood) return null;
+
+    const tags = await Mood.getTagsForMood(id);
+    return new Mood({ ...mood, tags });
   }
 
   static async findByUserId(userId, options = {}) {
     let query = 'SELECT * FROM moods WHERE user_id = ?';
     let params = [userId];
 
-    // Add date filtering
     if (options.startDate) {
       query += ' AND date >= ?';
       params.push(options.startDate);
@@ -51,10 +54,8 @@ export class Mood {
       params.push(options.endDate);
     }
 
-    // Add sorting
     query += ' ORDER BY date DESC';
 
-    // Add pagination
     if (options.limit) {
       query += ' LIMIT ?';
       params.push(options.limit);
@@ -66,7 +67,15 @@ export class Mood {
     }
 
     const moods = await getAllRows(query, params);
-    return moods.map(mood => new Mood(mood));
+
+    const moodsWithTags = await Promise.all(
+      moods.map(async mood => {
+        const tags = await Mood.getTagsForMood(mood.id);
+        return new Mood({ ...mood, tags });
+      })
+    );
+
+    return moodsWithTags;
   }
 
   static async findByUserIdAndDate(userId, date) {
@@ -74,20 +83,19 @@ export class Mood {
       'SELECT * FROM moods WHERE user_id = ? AND date = ?',
       [userId, date]
     );
-    return mood ? new Mood(mood) : null;
+    if (!mood) return null;
+
+    const tags = await Mood.getTagsForMood(mood.id);
+    return new Mood({ ...mood, tags });
   }
 
   async update(updates) {
-    const allowedUpdates = ['rating', 'emotions', 'note', 'activities'];
+    const allowedUpdates = ['rating', 'note'];
     const validUpdates = {};
-    
+
     for (const key of allowedUpdates) {
       if (updates[key] !== undefined) {
-        if (key === 'emotions' || key === 'activities') {
-          validUpdates[key] = JSON.stringify(updates[key]);
-        } else {
-          validUpdates[key] = updates[key];
-        }
+        validUpdates[key] = updates[key];
       }
     }
 
@@ -110,6 +118,16 @@ export class Mood {
     await runQuery('DELETE FROM moods WHERE id = ?', [this.id]);
   }
 
+  static async getTagsForMood(moodId) {
+    return await getAllRows(
+      `SELECT tag.id, tag.tag_name, tag.group_id 
+       FROM tag 
+       INNER JOIN mood_tag ON tag.id = mood_tag.tag_id 
+       WHERE mood_tag.mood_id = ?`,
+      [moodId]
+    );
+  }
+
   static async getAnalytics(userId, timeRange = '30d') {
     const days = parseInt(timeRange.replace('d', '')) || 30;
     const startDate = new Date();
@@ -124,7 +142,6 @@ export class Mood {
       totalEntries: moods.length,
       averageMood: 0,
       moodDistribution: {},
-      moodTrend: [],
       bestDay: null,
       worstDay: null
     };
@@ -133,19 +150,16 @@ export class Mood {
       return analytics;
     }
 
-    // Calculate average mood
     const totalMoodValue = moods.reduce((sum, mood) => sum + mood.rating, 0);
     analytics.averageMood = Math.round((totalMoodValue / moods.length) * 100) / 100;
 
-    // Calculate mood distribution
     moods.forEach(mood => {
       analytics.moodDistribution[mood.rating] = (analytics.moodDistribution[mood.rating] || 0) + 1;
     });
 
-    // Find best and worst days
     let bestMood = 0;
     let worstMood = 11;
-    
+
     moods.forEach(mood => {
       if (mood.rating > bestMood) {
         bestMood = mood.rating;
@@ -157,74 +171,32 @@ export class Mood {
       }
     });
 
-    // Calculate mood trend (weekly averages)
-    const weeklyData = {};
-    moods.forEach(mood => {
-      const week = getWeekKey(new Date(mood.date));
-      if (!weeklyData[week]) {
-        weeklyData[week] = { total: 0, count: 0 };
-      }
-      weeklyData[week].total += mood.rating;
-      weeklyData[week].count += 1;
-    });
-
-    analytics.moodTrend = Object.entries(weeklyData).map(([week, data]) => ({
-      week,
-      average: Math.round((data.total / data.count) * 100) / 100
-    }));
-
     return analytics;
   }
 
-  static async getTrends(userId, period = 'week') {
-    let query;
-    let groupBy;
+  static async getTrends(userId, timeRange = '30d') {
+    const days = parseInt(timeRange.replace('d', '')) || 30;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const formattedDate = startDate.toISOString().split('T')[0];
 
-    switch (period) {
-      case 'week':
-        query = `
-          SELECT 
-            date,
-            AVG(rating) as avg_mood,
-            COUNT(*) as entries
-          FROM moods 
-          WHERE user_id = ? AND date >= date('now', '-4 weeks')
-          GROUP BY date
-          ORDER BY date ASC
-        `;
-        break;
-      case 'month':
-        query = `
-          SELECT 
-            strftime('%Y-%m', date) as period,
-            AVG(rating) as avg_mood,
-            COUNT(*) as entries
-          FROM moods 
-          WHERE user_id = ? AND date >= date('now', '-6 months')
-          GROUP BY strftime('%Y-%m', date)
-          ORDER BY period ASC
-        `;
-        break;
-      case 'year':
-        query = `
-          SELECT 
-            strftime('%Y', date) as period,
-            AVG(rating) as avg_mood,
-            COUNT(*) as entries
-          FROM moods 
-          WHERE user_id = ?
-          GROUP BY strftime('%Y', date)
-          ORDER BY period ASC
-        `;
-        break;
-      default:
-        throw new Error('Invalid period. Use: week, month, or year');
-    }
+    const query = `
+      SELECT 
+        date,
+        AVG(rating) AS avg_mood,
+        COUNT(*) AS entries
+      FROM moods
+      WHERE user_id = ? AND date >= ?
+      GROUP BY date
+      ORDER BY date ASC
+    `;
 
-    const trends = await getAllRows(query, [userId]);
+    const trends = await getAllRows(query, [userId, formattedDate]);
+
     return trends.map(trend => ({
-      ...trend,
-      avg_mood: Math.round(trend.avg_mood * 100) / 100
+      date: trend.date,
+      avg_mood: Math.round(trend.avg_mood * 100) / 100,
+      entries: trend.entries
     }));
   }
 
@@ -232,25 +204,11 @@ export class Mood {
     return {
       id: this.id,
       rating: this.rating,
-      emotions: this.emotions,
       note: this.note,
-      activities: this.activities,
       date: this.date,
       created_at: this.created_at,
-      updated_at: this.updated_at
+      updated_at: this.updated_at,
+      tags: this.tags
     };
   }
-}
-
-// Helper function to get week key
-function getWeekKey(date) {
-  const year = date.getFullYear();
-  const week = getWeekNumber(date);
-  return `${year}-W${week.toString().padStart(2, '0')}`;
-}
-
-function getWeekNumber(date) {
-  const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-  const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
-  return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
