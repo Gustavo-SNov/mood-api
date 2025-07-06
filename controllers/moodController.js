@@ -64,7 +64,6 @@ export const getMood = async (req, res, next) => {
 
 export const createMood = async (req, res, next) => {
   try {
-    console.log("chegou aqui")
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({

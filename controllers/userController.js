@@ -113,7 +113,7 @@ export const updateProfile = async (req, res, next) => {
 export const deleteAccount = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
-console.log("delteado")
+
     if (!user) {
       return res.status(404).json({
         message: 'Usuário não encontrado'
