@@ -6,8 +6,7 @@ import {
   createMood,
   updateMood,
   deleteMood,
-  getAnalytics,
-  getTrends,
+  getAnalytics
 } from "../controllers/moodController.js";
 import { authenticateToken } from "../middleware/auth.js";
 
@@ -58,12 +57,11 @@ const moodUpdateValidation = [
     .withMessage("Atividades precisa ser um array"),
 ];
 
-router.get("/", getMoods);
-router.post("/", moodValidation, createMood);
-router.get("/analytics", getAnalytics);
-router.get("/trends", getTrends);
-router.get("/:id", getMood);
-router.put("/:id", moodUpdateValidation, updateMood);
-router.delete("/:id", deleteMood);
+router.get('/', getMoods);
+router.post('/', moodValidation, createMood);
+router.get('/analytics', getAnalytics);
+router.get('/:id', getMood);
+router.put('/:id', moodUpdateValidation, updateMood);
+router.delete('/:id', deleteMood);
 
 export default router;

@@ -154,24 +154,9 @@ export const getAnalytics = async (req, res, next) => {
 
     const analytics = await Mood.getAnalytics(userId, range);
 
-    res.json({
+    res.json(
       analytics,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const getTrends = async (req, res, next) => {
-  try {
-    const userId = req.user.id;
-    const { range = "30d" } = req.query;
-
-    const trends = await Mood.getTrends(userId, range);
-
-    res.json({
-      trends,
-    });
+    );
   } catch (error) {
     next(error);
   }
