@@ -1,4 +1,5 @@
 import { runQuery, getRow, getAllRows } from '../config/database.js';
+import { Tag } from './Tag.js'
 
 export class Mood {
   constructor(data) {
@@ -132,10 +133,11 @@ export class Mood {
     const days = parseInt(timeRange.replace('d', '')) || 30;
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
+    const startDateStr = startDate.toISOString().split('T')[0];
 
     const moods = await getAllRows(
       'SELECT rating, date FROM moods WHERE user_id = ? AND date >= ? ORDER BY date ASC',
-      [userId, startDate.toISOString().split('T')[0]]
+      [userId, startDateStr]
     );
 
     const analytics = {
@@ -143,7 +145,8 @@ export class Mood {
       averageMood: 0,
       moodDistribution: {},
       bestDay: null,
-      worstDay: null
+      worstDay: null,
+      topTags: []
     };
 
     if (moods.length === 0) {
@@ -151,7 +154,7 @@ export class Mood {
     }
 
     const totalMoodValue = moods.reduce((sum, mood) => sum + mood.rating, 0);
-    analytics.averageMood = Math.round((totalMoodValue / moods.length) * 100) / 100;
+    analytics.averageMood = Math.round(totalMoodValue / moods.length);
 
     moods.forEach(mood => {
       analytics.moodDistribution[mood.rating] = (analytics.moodDistribution[mood.rating] || 0) + 1;
@@ -171,33 +174,9 @@ export class Mood {
       }
     });
 
+    analytics.topTags = await Tag.getTopTagsForUser(userId, timeRange, 5);
+
     return analytics;
-  }
-
-  static async getTrends(userId, timeRange = '30d') {
-    const days = parseInt(timeRange.replace('d', '')) || 30;
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
-    const formattedDate = startDate.toISOString().split('T')[0];
-
-    const query = `
-      SELECT 
-        date,
-        AVG(rating) AS avg_mood,
-        COUNT(*) AS entries
-      FROM moods
-      WHERE user_id = ? AND date >= ?
-      GROUP BY date
-      ORDER BY date ASC
-    `;
-
-    const trends = await getAllRows(query, [userId, formattedDate]);
-
-    return trends.map(trend => ({
-      date: trend.date,
-      avg_mood: Math.round(trend.avg_mood * 100) / 100,
-      entries: trend.entries
-    }));
   }
 
   toJSON() {

@@ -1,6 +1,6 @@
 import express from 'express';
 import { body } from 'express-validator';
-import {getMoods, getMood, createMood, updateMood, deleteMood, getAnalytics, getTrends} from '../controllers/moodController.js';
+import {getMoods, getMood, createMood, updateMood, deleteMood, getAnalytics} from '../controllers/moodController.js';
 import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -53,7 +53,6 @@ const moodUpdateValidation = [
 router.get('/', getMoods);
 router.post('/', moodValidation, createMood);
 router.get('/analytics', getAnalytics);
-router.get('/trends', getTrends);
 router.get('/:id', getMood);
 router.put('/:id', moodUpdateValidation, updateMood);
 router.delete('/:id', deleteMood);
