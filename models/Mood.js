@@ -22,7 +22,6 @@ export class Mood {
 
     const moodId = result.id;
 
-    // Inserir tags associadas, se houver
     for (const tagId of tag_ids) {
       await runQuery(
         'INSERT INTO mood_tag (mood_id, tag_id) VALUES (?, ?)',
@@ -69,7 +68,6 @@ export class Mood {
 
     const moods = await getAllRows(query, params);
 
-    // Carregar tags para cada mood
     const moodsWithTags = await Promise.all(
       moods.map(async mood => {
         const tags = await Mood.getTagsForMood(mood.id);
@@ -130,6 +128,78 @@ export class Mood {
     );
   }
 
+  static async getAnalytics(userId, timeRange = '30d') {
+    const days = parseInt(timeRange.replace('d', '')) || 30;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    const moods = await getAllRows(
+      'SELECT rating, date FROM moods WHERE user_id = ? AND date >= ? ORDER BY date ASC',
+      [userId, startDate.toISOString().split('T')[0]]
+    );
+
+    const analytics = {
+      totalEntries: moods.length,
+      averageMood: 0,
+      moodDistribution: {},
+      bestDay: null,
+      worstDay: null
+    };
+
+    if (moods.length === 0) {
+      return analytics;
+    }
+
+    const totalMoodValue = moods.reduce((sum, mood) => sum + mood.rating, 0);
+    analytics.averageMood = Math.round((totalMoodValue / moods.length) * 100) / 100;
+
+    moods.forEach(mood => {
+      analytics.moodDistribution[mood.rating] = (analytics.moodDistribution[mood.rating] || 0) + 1;
+    });
+
+    let bestMood = 0;
+    let worstMood = 11;
+
+    moods.forEach(mood => {
+      if (mood.rating > bestMood) {
+        bestMood = mood.rating;
+        analytics.bestDay = mood.date;
+      }
+      if (mood.rating < worstMood) {
+        worstMood = mood.rating;
+        analytics.worstDay = mood.date;
+      }
+    });
+
+    return analytics;
+  }
+
+  static async getTrends(userId, timeRange = '30d') {
+    const days = parseInt(timeRange.replace('d', '')) || 30;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const formattedDate = startDate.toISOString().split('T')[0];
+
+    const query = `
+      SELECT 
+        date,
+        AVG(rating) AS avg_mood,
+        COUNT(*) AS entries
+      FROM moods
+      WHERE user_id = ? AND date >= ?
+      GROUP BY date
+      ORDER BY date ASC
+    `;
+
+    const trends = await getAllRows(query, [userId, formattedDate]);
+
+    return trends.map(trend => ({
+      date: trend.date,
+      avg_mood: Math.round(trend.avg_mood * 100) / 100,
+      entries: trend.entries
+    }));
+  }
+
   toJSON() {
     return {
       id: this.id,
@@ -141,43 +211,4 @@ export class Mood {
       tags: this.tags
     };
   }
-
-  // Métodos getAnalytics e getTrends permanecem como estão
 }
-
-export const getAnalytics = async (req, res, next) => {
-  try {
-    const userId = req.user.id;
-    const { range = '30d' } = req.query;
-
-    const analytics = await Mood.getAnalytics(userId, range);
-
-    res.json({
-      success: true,
-      data: {
-        analytics
-      }
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Get mood trends
-export const getTrends = async (req, res, next) => {
-  try {
-    const userId = req.user.id;
-    const { period = 'week' } = req.query;
-
-    const trends = await Mood.getTrends(userId, period);
-
-    res.json({
-      success: true,
-      data: {
-        trends
-      }
-    });
-  } catch (error) {
-    next(error);
-  }
-};

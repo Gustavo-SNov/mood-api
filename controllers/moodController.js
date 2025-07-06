@@ -205,7 +205,6 @@ export const deleteMood = async (req, res, next) => {
   }
 };
 
-// Get mood analytics
 export const getAnalytics = async (req, res, next) => {
   try {
     const userId = req.user.id;
@@ -224,13 +223,12 @@ export const getAnalytics = async (req, res, next) => {
   }
 };
 
-// Get mood trends
 export const getTrends = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { period = 'week' } = req.query;
+    const { range = '30d' } = req.query;
 
-    const trends = await Mood.getTrends(userId, period);
+    const trends = await Mood.getTrends(userId, range);
 
     res.json({
       success: true,
