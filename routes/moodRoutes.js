@@ -11,8 +11,8 @@ router.use(authenticateToken);
 // Validation rules
 const moodValidation = [
   body('rating')
-    .isInt({ min: 1, max: 10 })
-    .withMessage('O valor do mood deve ser entre 1 e 10'),
+    .isInt({ min: 1, max: 5 })
+    .withMessage('O valor do mood deve ser entre 1 e 5'),
   body('emotions')
     .optional()
     .isArray()
@@ -34,8 +34,8 @@ const moodValidation = [
 const moodUpdateValidation = [
   body('rating')
     .optional()
-    .isInt({ min: 1, max: 10 })
-    .withMessage('O valor do mood deve ser entre 1 e 10'),
+    .isInt({ min: 1, max: 5 })
+    .withMessage('O valor do mood deve ser entre 1 e 5'),
   body('emotions')
     .optional()
     .isArray()

@@ -208,6 +208,7 @@ export const updateProfile = async (req, res, next) => {
     }
 
     await user.update(req.body);
+    res.sendStatus(200);
   } catch (error) {
     next(error);
   }

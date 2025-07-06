@@ -12,7 +12,7 @@ let db;
 
 export const getDatabase = () => {
   if (!db) {
-    throw new Error('Database not initialized');
+    throw new Error('Banco de dados não iniciado');
   }
   return db;
 };
@@ -154,9 +154,9 @@ export const closeDatabase = () => {
   if (db) {
     db.close((err) => {
       if (err) {
-        console.error('Error closing database:', err);
+        console.error('Erro ao fechar o banco de dados:', err);
       } else {
-        console.log('Database connection closed');
+        console.log('Banco de dados desconectado');
       }
     });
   }
