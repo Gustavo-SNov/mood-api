@@ -64,6 +64,7 @@ export const getMood = async (req, res, next) => {
 
 export const createMood = async (req, res, next) => {
   try {
+    console.log("chegou aqui")
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -74,9 +75,7 @@ export const createMood = async (req, res, next) => {
 
     const userId = req.user.id;
     const { rating, note, date, tag_ids } = req.body;
-
     const moodDate = date || new Date().toISOString().split('T')[0];
-
     const moodData = {
       user_id: userId,
       rating,
@@ -86,6 +85,7 @@ export const createMood = async (req, res, next) => {
     };
 
     await Mood.create(moodData);
+    res.sendStatus(200);
   } catch (error) {
     next(error);
   }
@@ -122,6 +122,7 @@ export const updateMood = async (req, res, next) => {
     }
 
     await mood.update(req.body);
+    res.sendStatus(200);
   } catch (error) {
     next(error);
   }
@@ -149,6 +150,7 @@ export const deleteMood = async (req, res, next) => {
     }
 
     await mood.delete();
+    res.sendStatus(200);
   } catch (error) {
     next(error);
   }
