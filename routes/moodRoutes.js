@@ -12,42 +12,42 @@ router.use(authenticateToken);
 const moodValidation = [
   body('rating')
     .isInt({ min: 1, max: 10 })
-    .withMessage('Mood value must be between 1 and 10'),
+    .withMessage('O valor do mood deve ser entre 1 e 10'),
   body('emotions')
     .optional()
     .isArray()
-    .withMessage('Emotions must be an array'),
+    .withMessage('Emoções devem ser um array'),
   body('note')
     .optional()
     .isLength({ max: 1000 })
-    .withMessage('note cannot exceed 1000 characters'),
+    .withMessage('Nota não pode ultrapassar 1000 letras'),
   body('activities')
     .optional()
     .isArray()
-    .withMessage('Activities must be an array'),
+    .withMessage('Atividades precisa ser um array '),
   body('date')
     .optional()
     .isISO8601()
-    .withMessage('Date must be in ISO format (YYYY-MM-DD)')
+    .withMessage('Data deve estar no formato ISO (YYYY-MM-DD)')
 ];
 
 const moodUpdateValidation = [
   body('rating')
     .optional()
     .isInt({ min: 1, max: 10 })
-    .withMessage('Mood value must be between 1 and 10'),
+    .withMessage('O valor do mood deve ser entre 1 e 10'),
   body('emotions')
     .optional()
     .isArray()
-    .withMessage('Emotions must be an array'),
+    .withMessage('Emoções devem ser um array'),
   body('note')
     .optional()
     .isLength({ max: 1000 })
-    .withMessage('note cannot exceed 1000 characters'),
+    .withMessage('Nota não pode ultrapassar 1000 letras'),
   body('activities')
     .optional()
     .isArray()
-    .withMessage('Activities must be an array')
+    .withMessage('Atividades precisa ser um array')
 ];
 
 router.get('/', getMoods);
