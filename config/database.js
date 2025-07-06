@@ -237,50 +237,50 @@ const seedDatabase = async () => {
             {
                 group_name: 'Atividades',
                 tags: [
-                    { name: 'Trabalho', icon: 'work' },
-                    { name: 'Estudo', icon: 'school' },
-                    { name: 'Exercício', icon: 'fitness_center' },
-                    { name: 'Lazer', icon: 'sports_esports' }
+                    { name: 'Trabalho', icon: 'Briefcase' },
+                    { name: 'Estudo', icon: 'School' },
+                    { name: 'Exercício', icon: 'Dumbbell' },
+                    { name: 'Lazer', icon: 'Gamepad2' }
                 ]
             },
             {
                 group_name: 'Emoções',
                 tags: [
-                    { name: 'Feliz', icon: 'sentiment_very_satisfied' },
-                    { name: 'Triste', icon: 'sentiment_sad' },
-                    { name: 'Ansioso(a)', icon: 'sentiment_anxious' },
-                    { name: 'Calmo(a)', icon: 'self_care' },
-                    { name: 'Bravo', icon: 'sentiment_angry' },
-                    { name: 'Desapontado', icon: 'sentiment_dissatisfied' },
-                    { name: 'Preocupado', icon: 'sentiment_worried' },
-                    { name: 'Assustado', icon: 'pan_tool_alt' },
-                    { name: 'Frustrado', icon: 'sentiment_frustrated' },
-                    { name: 'Estressado', icon: 'sick' }
+                    { name: 'Feliz', icon: 'Smile' },
+                    { name: 'Triste', icon: 'Frown' },
+                    { name: 'Ansioso(a)', icon: 'Meh' },
+                    { name: 'Calmo(a)', icon: 'Leaf' },
+                    { name: 'Bravo', icon: 'Angry' },
+                    { name: 'Desapontado', icon: 'Frown' },
+                    { name: 'Preocupado', icon: 'Frown' },
+                    { name: 'Assustado', icon: 'Ghost' },
+                    { name: 'Frustrado', icon: 'Annoyed' },
+                    { name: 'Estressado', icon: 'BrainCircuit' }
                 ]
             },
             {
                 group_name: 'Social',
                 tags: [
-                    { name: 'Amigos', icon: 'group' },
-                    { name: 'Família', icon: 'family_restroom' },
-                    { name: 'Sozinho(a)', icon: 'person' },
-                    { name: 'Festa', icon: 'celebration' }
+                    { name: 'Amigos', icon: 'Users' },
+                    { name: 'Família', icon: 'Home' },
+                    { name: 'Sozinho(a)', icon: 'User' },
+                    { name: 'Festa', icon: 'PartyPopper' }
                 ]
             },
             {
                 group_name: 'Clima',
                 tags: [
-                    { name: 'Ensolarado', icon: 'sunny' },
-                    { name: 'Chuvoso', icon: 'rainy' },
-                    { name: 'Nublado', icon: 'cloudy' }
+                    { name: 'Ensolarado', icon: 'Sun' },
+                    { name: 'Chuvoso', icon: 'CloudRain' },
+                    { name: 'Nublado', icon: 'Cloud' }
                 ]
             },
             {
                 group_name: 'Saúde',
                 tags: [
-                    { name: 'Dormi bem', icon: 'bed' },
-                    { name: 'Comi bem', icon: 'restaurant' },
-                    { name: 'Doente', icon: 'sick' }
+                    { name: 'Dormi bem', icon: 'Bed' },
+                    { name: 'Comi bem', icon: 'Utensils' },
+                    { name: 'Doente', icon: 'Thermometer' }
                 ]
             }
         ];
