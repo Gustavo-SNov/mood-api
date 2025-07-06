@@ -43,7 +43,7 @@ export const getMood = async (req, res, next) => {
     }
 
     // Check if mood belongs to user
-    if (mood.user_id !== userId) {
+    if (mood.userId !== userId) {
       return res.status(403).json({
         message: "Acesso negado",
       });
@@ -57,7 +57,6 @@ export const getMood = async (req, res, next) => {
 
 export const createMood = async (req, res, next) => {
   try {
-    console.log("chegou aqui");
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -67,14 +66,14 @@ export const createMood = async (req, res, next) => {
     }
 
     const userId = req.user.id;
-    const { rating, note, date, tag_ids } = req.body;
+    const { rating, note, date, tags } = req.body;
     const moodDate = date || new Date().toISOString().split("T")[0];
     const moodData = {
-      user_id: userId,
+      userId,
       rating,
       note,
       date: moodDate,
-      tag_ids: Array.isArray(tag_ids) ? tag_ids : [],
+      tags: Array.isArray(tags) ? tags : [],
     };
 
     await Mood.create(moodData);
@@ -107,7 +106,7 @@ export const updateMood = async (req, res, next) => {
     }
 
     // Check if mood belongs to user
-    if (mood.user_id !== userId) {
+    if (mood.userId !== userId) {
       return res.status(403).json({
         message: "Acesso negado",
       });
@@ -135,7 +134,7 @@ export const deleteMood = async (req, res, next) => {
     }
 
     // Check if mood belongs to user
-    if (mood.user_id !== userId) {
+    if (mood.userId !== userId) {
       return res.status(403).json({
         message: "Acesso negado",
       });

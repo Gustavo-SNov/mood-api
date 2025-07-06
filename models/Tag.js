@@ -1,10 +1,22 @@
-import { getRow, getAllRows, runQuery } from "../config/database.js";
+import { getAllRows } from "../config/database.js";
 
 export class Tag {
   constructor(data) {
     this.id = data.id;
-    this.tag_name = data.tag_name;
-    this.group_id = data.group_id;
+    this.name = data.tag_name;
+    this.groupId = data.group_id;
+  }
+
+  static async getTagsForMood(moodId) {
+    const data = await getAllRows(
+      `SELECT tag.id, tag.tag_name, tag.group_id 
+       FROM tag 
+       INNER JOIN mood_tag ON tag.id = mood_tag.tag_id 
+       WHERE mood_tag.mood_id = ?`,
+      [moodId]
+    );
+
+    return data.map((tag) => new Tag(tag));
   }
 
   static async getGroupsWithTags() {
@@ -12,17 +24,19 @@ export class Tag {
 
     const result = await Promise.all(
       groups.map(async (group) => {
-        const tags = await getAllRows(
+        const data = await getAllRows(
           "SELECT id, tag_name FROM tag WHERE group_id = ?",
-          [group.id],
+          [group.id]
         );
+
+        const tags = data.map((tag) => new Tag(tag));
 
         return {
           id: group.id,
-          group_name: group.group_name,
+          groupName: group.group_name,
           tags,
         };
-      }),
+      })
     );
 
     return result;
@@ -31,8 +45,8 @@ export class Tag {
   toJSON() {
     return {
       id: this.id,
-      tag_name: this.tag_name,
-      group_id: this.group_id,
+      name: this.name,
+      groupId: this.groupId,
     };
   }
 }
