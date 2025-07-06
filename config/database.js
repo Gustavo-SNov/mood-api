@@ -117,7 +117,7 @@ const createTables = async () => {
 const seedDatabase = async () => {
   try {
     // 1. Verifica se a tabela de grupos já tem dados
-    const checkRow = await getRow('SELECT COUNT(id) as count FROM group_tag WHERE id <> 1');
+    const checkRow = await getRow('SELECT COUNT(id) as count FROM group_tag');
     if (checkRow && checkRow.count > 0) {
       console.log('Database already seeded. Skipping.');
       return;
