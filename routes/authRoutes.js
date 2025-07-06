@@ -2,14 +2,8 @@ import express from 'express';
 import { body } from 'express-validator';
 import {
   register,
-  login,
-  refreshToken,
-  logout,
-  verifyToken,
-  getProfile,
-  updateProfile
+  login
 } from '../controllers/authController.js';
-import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -40,25 +34,8 @@ const loginValidation = [
     .withMessage('Senha não informada')
 ];
 
-const profileUpdateValidation = [
-  body('name')
-    .optional()
-    .trim()
-    .isLength({ min: 2, max: 50 })
-    .withMessage('Nome deve ter entre 2 e 50 caracteres'),
-  body('email')
-    .optional()
-    .isEmail()
-    .normalizeEmail()
-    .withMessage('Please provide a valid email')
-];
-
+// Routes
 router.post('/register', registerValidation, register);
 router.post('/login', loginValidation, login);
-router.post('/refresh', refreshToken);
-router.post('/logout', logout);
-router.get('/verify', authenticateToken, verifyToken);
-router.get('/profile', authenticateToken, getProfile);
-router.put('/profile', authenticateToken, profileUpdateValidation, updateProfile);
 
 export default router;
