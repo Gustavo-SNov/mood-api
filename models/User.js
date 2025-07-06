@@ -87,7 +87,12 @@ export class User {
   }
 
   toJSON() {
-    const { password, ...userWithoutPassword } = this;
-    return userWithoutPassword;
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
   }
 }

@@ -1,4 +1,4 @@
-import { getAllRows } from "../config/database.js";
+import { getAllRows, getRow } from "../config/database.js";
 
 export class Tag {
   constructor(data) {
@@ -43,11 +43,11 @@ export class Tag {
     return result;
   }
 
-  static async getTagsById(id){
-    const tag = await getRow('SELECT * FROM tag WHERE id = ?', id);
+  static async getTagsById(id) {
+    const tag = await getRow("SELECT * FROM tag WHERE id = ?", id);
     if (!tag) return null;
 
-     return tag;
+    return tag;
   }
 
   toJSON() {
@@ -55,7 +55,7 @@ export class Tag {
       id: this.id,
       name: this.name,
       icon: this.icon,
-      group_id: this.groupId
+      group_id: this.groupId,
     };
   }
 }
