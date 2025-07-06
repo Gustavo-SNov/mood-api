@@ -10,6 +10,7 @@ const router = express.Router();
 
 router.use(authenticateToken);
 
-router.get("/", getGroupsWithTags);
+router.get('/', getGroupsWithTags);
+router.get('/:id', getTagById);
 
 export default router;

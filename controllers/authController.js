@@ -3,7 +3,7 @@ import { User } from "../models/User.js";
 import { RefreshToken } from "../models/RefreshToken.js";
 import { validationResult } from "express-validator";
 
-// Register new user
+// Registrar novo usuário
 export const register = async (req, res, next) => {
   try {
     const errors = validationResult(req);
@@ -43,7 +43,7 @@ export const register = async (req, res, next) => {
   }
 };
 
-// Login user
+// Login usuário
 export const login = async (req, res, next) => {
   try {
     const errors = validationResult(req);

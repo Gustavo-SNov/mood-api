@@ -4,6 +4,7 @@ export class Tag {
   constructor(data) {
     this.id = data.id;
     this.name = data.tag_name;
+    this.icon = data.icon;
     this.groupId = data.group_id;
   }
 
@@ -42,11 +43,19 @@ export class Tag {
     return result;
   }
 
+  static async getTagsById(id){
+    const tag = await getRow('SELECT * FROM tag WHERE id = ?', id);
+    if (!tag) return null;
+
+     return tag;
+  }
+
   toJSON() {
     return {
       id: this.id,
       name: this.name,
-      groupId: this.groupId,
+      icon: this.icon,
+      group_id: this.groupId
     };
   }
 }
