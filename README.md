@@ -6,10 +6,10 @@ Uma API completa para rastreamento de humor construída com Node.js, Express e S
 - Tags são atividades
 - Atividades são retornados -> Array de Tags 
 - Cada Tag: Tag = { Icone, Nome, Grupo}
-- Tag.Grupo não será retornado na Requisição 
+- Tag.Grupo não será retornado na Requisição
 - Grupo é uma FK da Tag
 - Criar GET para Grupo de Tags
-- 
+- No Mood um array de Tags
 - Login retorna um Token somente e apenas
 - Register não retorna nada, apenas uma mensagem de sucesso!
 - DELETE NO USER
