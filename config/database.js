@@ -222,6 +222,7 @@ const createTables = async () => {
 
 // NOVO: Função de seeding integrada ao arquivo do banco de dados
 const seedDatabase = async () => {
+<<<<<<< Updated upstream
   try {
     // 1. Verifica se a tabela de grupos já tem dados
     const checkRow = await getRow(
@@ -230,6 +231,89 @@ const seedDatabase = async () => {
     if (checkRow && checkRow.count > 0) {
       console.log("Database already seeded. Skipping.");
       return;
+=======
+    try {
+        // 1. Verifica se a tabela de grupos já tem dados
+        const checkRow = await getRow('SELECT COUNT(id) as count FROM group_tag');
+        if (checkRow && checkRow.count > 0) {
+            console.log('Database already seeded. Skipping.');
+            return;
+        }
+
+        console.log('Database is empty. Seeding initial data...');
+
+        // 2. Define os dados iniciais, agora com nomes de ícones para cada tag
+        const initialData = [
+            {
+                group_name: 'Atividades',
+                tags: [
+                    { name: 'Trabalho', icon: 'Briefcase' },
+                    { name: 'Estudo', icon: 'School' },
+                    { name: 'Exercício', icon: 'Dumbbell' },
+                    { name: 'Lazer', icon: 'Gamepad2' }
+                ]
+            },
+            {
+                group_name: 'Emoções',
+                tags: [
+                    { name: 'Feliz', icon: 'Smile' },
+                    { name: 'Triste', icon: 'Frown' },
+                    { name: 'Ansioso(a)', icon: 'Meh' },
+                    { name: 'Calmo(a)', icon: 'Leaf' },
+                    { name: 'Bravo', icon: 'Angry' },
+                    { name: 'Desapontado', icon: 'Frown' },
+                    { name: 'Preocupado', icon: 'Frown' },
+                    { name: 'Assustado', icon: 'Ghost' },
+                    { name: 'Frustrado', icon: 'Annoyed' },
+                    { name: 'Estressado', icon: 'BrainCircuit' }
+                ]
+            },
+            {
+                group_name: 'Social',
+                tags: [
+                    { name: 'Amigos', icon: 'Users' },
+                    { name: 'Família', icon: 'Home' },
+                    { name: 'Sozinho(a)', icon: 'User' },
+                    { name: 'Festa', icon: 'PartyPopper' }
+                ]
+            },
+            {
+                group_name: 'Clima',
+                tags: [
+                    { name: 'Ensolarado', icon: 'Sun' },
+                    { name: 'Chuvoso', icon: 'CloudRain' },
+                    { name: 'Nublado', icon: 'Cloud' }
+                ]
+            },
+            {
+                group_name: 'Saúde',
+                tags: [
+                    { name: 'Dormi bem', icon: 'Bed' },
+                    { name: 'Comi bem', icon: 'Utensils' },
+                    { name: 'Doente', icon: 'Thermometer' }
+                ]
+            }
+        ];
+
+        // 3. Insere os dados com a lógica corrigida
+        for (const groupData of initialData) {
+            const { group_name, tags } = groupData;
+            const groupResult = await runQuery('INSERT INTO group_tag (group_name) VALUES (?)', [group_name]);
+            const groupId = groupResult.id;
+
+            if (tags && tags.length > 0) {
+                // Itera sobre a lista de objetos de tag (que agora contêm nome e ícone)
+                for (const tag of tags) {
+                    // Corrige o comando INSERT para incluir 3 colunas e 3 valores
+                    await runQuery('INSERT INTO tag (tag_name, icon, group_id) VALUES (?, ?, ?)', [tag.name, tag.icon, groupId]);
+                }
+            }
+        }
+        console.log('INSERTS de geração de GROUP_TAGS e TAGS criados com sucesso.');
+
+    } catch (error) {
+        console.error('Erro durante a inserção de informações DEFAULT:', error);
+>>>>>>> Stashed changes
     }
 
     console.log("Database is empty. Seeding initial data...");
