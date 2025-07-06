@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import express from 'express';
-import { body } from 'express-validator';
-import {getMoods, getMood, createMood, updateMood, deleteMood, getAnalytics} from '../controllers/moodController.js';
-import { authenticateToken } from '../middleware/auth.js';
-=======
 import express from "express";
 import { body } from "express-validator";
 import {
@@ -12,11 +6,9 @@ import {
   createMood,
   updateMood,
   deleteMood,
-  getAnalytics,
-  getTrends,
+  getAnalytics
 } from "../controllers/moodController.js";
 import { authenticateToken } from "../middleware/auth.js";
->>>>>>> main
 
 const router = express.Router();
 
