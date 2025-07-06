@@ -1,7 +1,5 @@
 import express from "express";
 import cors from "cors";
-import helmet from "helmet";
-import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -32,36 +30,18 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Security middleware
-app.use(helmet());
-
-// Rate limiting
-const generalLimiter = rateLimit({
-  windowMs: config.rateLimit.windowMs,
-  max: config.rateLimit.max,
-  message: config.rateLimit.message,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const authLimiter = rateLimit({
-  windowMs: config.authRateLimit.windowMs,
-  max: config.authRateLimit.max,
-  message: config.authRateLimit.message,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-app.use(generalLimiter);
-
-// CORS configuration
 app.use(
   cors({
     //origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-    origin: config.corsOrigin,
+    origin: true,
     credentials: true,
   }),
 );
+
+app.options('*', cors({
+  origin: true,
+  credentials: true
+}));
 
 // Body parsing middleware
 app.use(express.json({ limit: "10mb" }));
