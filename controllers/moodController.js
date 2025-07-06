@@ -27,14 +27,9 @@ export const getMoods = async (req, res, next) => {
 
     const moods = await Mood.findByUserId(userId, options);
 
-    res.json({
-      moods: moods.map(mood => mood.toJSON()),
-      pagination: {
-        limit: options.limit,
-        offset: options.offset,
-        total: moods.length
-      }
-    });
+    res.json(
+      moods.map(mood => mood.toJSON()),
+    );
   } catch (error) {
     next(error);
   }
@@ -61,9 +56,7 @@ export const getMood = async (req, res, next) => {
       });
     }
 
-    res.json({
-      mood: mood.toJSON()
-    });
+    res.json(mood.toJSON());
   } catch (error) {
     next(error);
   }
@@ -92,11 +85,7 @@ export const createMood = async (req, res, next) => {
       tag_ids: Array.isArray(tag_ids) ? tag_ids : []
     };
 
-    const mood = await Mood.create(moodData);
-
-    res.status(201).json({
-        mood: mood.toJSON()
-    });
+    await Mood.create(moodData);
   } catch (error) {
     next(error);
   }
@@ -132,11 +121,7 @@ export const updateMood = async (req, res, next) => {
       });
     }
 
-    const updatedMood = await mood.update(req.body);
-
-    res.json({
-        mood: updatedMood.toJSON()
-    });
+    await mood.update(req.body);
   } catch (error) {
     next(error);
   }

@@ -184,9 +184,9 @@ export const getProfile = async (req, res, next) => {
       });
     }
 
-    res.json({
-      user: user.toJSON()
-    });
+    res.json(
+      user.toJSON()
+    );
   } catch (error) {
     next(error);
   }
@@ -209,12 +209,8 @@ export const updateProfile = async (req, res, next) => {
         message: 'Usuário não encontrado'
       });
     }
-
-    const updatedUser = await user.update(req.body);
-
-    res.json({
-      user: updatedUser.toJSON()
-    });
+    
+    await user.update(req.body);
   } catch (error) {
     next(error);
   }
