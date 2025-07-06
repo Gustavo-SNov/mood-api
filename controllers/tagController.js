@@ -1,10 +1,10 @@
-import { Tag } from '../models/Tag.js';
+import { Tag } from "../models/Tag.js";
 
 // Retorna todas as tags
 export const getAllTags = async (req, res, next) => {
   try {
     const tags = await Tag.findAll();
-    res.json( tags );
+    res.json(tags);
   } catch (err) {
     next(err);
   }
@@ -13,9 +13,9 @@ export const getAllTags = async (req, res, next) => {
 // Retorna tag por ID
 export const getTagById = async (req, res, next) => {
   try {
-    const tag = await Tag.getTagsById(req.params.id);
-    if (!tag) return res.status(404).json({ message: 'Tag não encontrada' });
-    res.json( tag );
+    const tag = await Tag.findById(req.params.id);
+    if (!tag) return res.status(404).json({ message: "Tag não encontrada" });
+    res.json(tag);
   } catch (err) {
     next(err);
   }
@@ -25,7 +25,7 @@ export const getTagById = async (req, res, next) => {
 export const getGroupsWithTags = async (req, res, next) => {
   try {
     const groups = await Tag.getGroupsWithTags();
-    res.json( groups );
+    res.json(groups);
   } catch (err) {
     next(err);
   }

@@ -1,37 +1,53 @@
-import { getRow, getAllRows, runQuery } from '../config/database.js';
+import { getAllRows, getRow } from "../config/database.js";
 
 export class Tag {
   constructor(data) {
     this.id = data.id;
-    this.tag_name = data.tag_name;
+    this.name = data.tag_name;
     this.icon = data.icon;
-    this.group_id = data.group_id;
+    this.groupId = data.group_id;
+  }
+
+  static async getTagsForMood(moodId) {
+    const data = await getAllRows(
+      `SELECT tag.id, tag.tag_name, tag.group_id 
+       FROM tag 
+       INNER JOIN mood_tag ON tag.id = mood_tag.tag_id 
+       WHERE mood_tag.mood_id = ?`,
+      [moodId],
+    );
+
+    return data.map((tag) => new Tag(tag));
   }
 
   static async getGroupsWithTags() {
-    const groups = await getAllRows('SELECT * FROM group_tag');
+    const groups = await getAllRows("SELECT * FROM group_tag");
 
-    const result = await Promise.all(groups.map(async group => {
-      const tags = await getAllRows(
-        'SELECT id, tag_name as name, icon FROM tag WHERE group_id = ?',
-        [group.id]
-      );
+    const result = await Promise.all(
+      groups.map(async (group) => {
+        const data = await getAllRows(
+          "SELECT id, tag_name FROM tag WHERE group_id = ?",
+          [group.id],
+        );
 
-      return {
-        id: group.id,
-        group_name: group.group_name,
-        tags
-      };
-    }));
+        const tags = data.map((tag) => new Tag(tag));
+
+        return {
+          id: group.id,
+          groupName: group.group_name,
+          tags,
+        };
+      }),
+    );
 
     return result;
   }
 
-  static async getTagsById(id){
-    const tag = await getRow('SELECT * FROM tag WHERE id = ?', id);
+  static async getTagsById(id) {
+    const tag = await getRow("SELECT * FROM tag WHERE id = ?", id);
     if (!tag) return null;
 
-     return tag;
+    return tag;
   }
 
   static async getTopTagsForUser(userId, timeRange = '30d', limit = 3) {
@@ -60,9 +76,9 @@ export class Tag {
   toJSON() {
     return {
       id: this.id,
-      name: this.tag_name,
+      name: this.name,
       icon: this.icon,
-      group_id: this.group_id
+      group_id: this.groupId,
     };
   }
 }

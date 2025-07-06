@@ -1,4 +1,4 @@
-import { body, validationResult } from 'express-validator';
+import { body, validationResult } from "express-validator";
 
 // Common validation helpers
 export const validateRequest = (req, res, next) => {
@@ -6,8 +6,8 @@ export const validateRequest = (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({
       success: false,
-      message: 'A validação falhou',
-      errors: errors.array()
+      message: "A validação falhou",
+      errors: errors.array(),
     });
   }
   next();
@@ -31,16 +31,23 @@ export const isValidMoodValue = (value) => {
 };
 
 export const isValidEmotions = (emotions) => {
-  return Array.isArray(emotions) && emotions.every(emotion => typeof emotion === 'string');
+  return (
+    Array.isArray(emotions) &&
+    emotions.every((emotion) => typeof emotion === "string")
+  );
 };
 
 export const isValidActivities = (activities) => {
-  return Array.isArray(activities) && activities.every(activity => typeof activity === 'string');
+  return (
+    Array.isArray(activities) &&
+    activities.every((activity) => typeof activity === "string")
+  );
 };
 
 // Password validation
 export const isStrongPassword = (password) => {
-  const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const strongPasswordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   return strongPasswordRegex.test(password);
 };
 
