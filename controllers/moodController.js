@@ -28,14 +28,11 @@ export const getMoods = async (req, res, next) => {
     const moods = await Mood.findByUserId(userId, options);
 
     res.json({
-      success: true,
-      data: {
-        moods: moods.map(mood => mood.toJSON()),
-        pagination: {
-          limit: options.limit,
-          offset: options.offset,
-          total: moods.length
-        }
+      moods: moods.map(mood => mood.toJSON()),
+      pagination: {
+        limit: options.limit,
+        offset: options.offset,
+        total: moods.length
       }
     });
   } catch (error) {
@@ -53,7 +50,6 @@ export const getMood = async (req, res, next) => {
 
     if (!mood) {
       return res.status(404).json({
-        success: false,
         message: 'Entrada de humor não encontrada'
       });
     }
@@ -61,16 +57,12 @@ export const getMood = async (req, res, next) => {
     // Check if mood belongs to user
     if (mood.user_id !== userId) {
       return res.status(403).json({
-        success: false,
         message: 'Acesso negado'
       });
     }
 
     res.json({
-      success: true,
-      data: {
-        mood: mood.toJSON()
-      }
+      mood: mood.toJSON()
     });
   } catch (error) {
     next(error);
@@ -82,7 +74,6 @@ export const createMood = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        success: false,
         message: 'Falha na validação',
         errors: errors.array()
       });
@@ -92,15 +83,6 @@ export const createMood = async (req, res, next) => {
     const { rating, note, date, tag_ids } = req.body;
 
     const moodDate = date || new Date().toISOString().split('T')[0];
-
-    // Verifica se já existe um mood para essa data
-    const existingMood = await Mood.findByUserIdAndDate(userId, moodDate);
-    if (existingMood) {
-      return res.status(409).json({
-        success: false,
-        message: 'Mood entry already exists for this date'
-      });
-    }
 
     const moodData = {
       user_id: userId,
@@ -113,11 +95,7 @@ export const createMood = async (req, res, next) => {
     const mood = await Mood.create(moodData);
 
     res.status(201).json({
-      success: true,
-      message: 'Mood entry created successfully',
-      data: {
         mood: mood.toJSON()
-      }
     });
   } catch (error) {
     next(error);
@@ -131,7 +109,6 @@ export const updateMood = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        success: false,
         message: 'A validação falhou',
         errors: errors.array()
       });
@@ -144,7 +121,6 @@ export const updateMood = async (req, res, next) => {
 
     if (!mood) {
       return res.status(404).json({
-        success: false,
         message: 'Entrada de humor não encontrada'
       });
     }
@@ -152,7 +128,6 @@ export const updateMood = async (req, res, next) => {
     // Check if mood belongs to user
     if (mood.user_id !== userId) {
       return res.status(403).json({
-        success: false,
         message: 'Acesso negado.'
       });
     }
@@ -160,11 +135,7 @@ export const updateMood = async (req, res, next) => {
     const updatedMood = await mood.update(req.body);
 
     res.json({
-      success: true,
-      message: 'Entrada de humor atualizada com sucesso!',
-      data: {
         mood: updatedMood.toJSON()
-      }
     });
   } catch (error) {
     next(error);
@@ -181,7 +152,6 @@ export const deleteMood = async (req, res, next) => {
 
     if (!mood) {
       return res.status(404).json({
-        success: false,
         message: 'Entrada de humor não encontrada'
       });
     }
@@ -189,17 +159,11 @@ export const deleteMood = async (req, res, next) => {
     // Check if mood belongs to user
     if (mood.user_id !== userId) {
       return res.status(403).json({
-        success: false,
         message: 'Acesso negado'
       });
     }
 
     await mood.delete();
-
-    res.json({
-      success: true,
-      message: 'Mood entry deleted successfully'
-    });
   } catch (error) {
     next(error);
   }
@@ -213,10 +177,7 @@ export const getAnalytics = async (req, res, next) => {
     const analytics = await Mood.getAnalytics(userId, range);
 
     res.json({
-      success: true,
-      data: {
         analytics
-      }
     });
   } catch (error) {
     next(error);
@@ -231,10 +192,7 @@ export const getTrends = async (req, res, next) => {
     const trends = await Mood.getTrends(userId, range);
 
     res.json({
-      success: true,
-      data: {
         trends
-      }
     });
   } catch (error) {
     next(error);

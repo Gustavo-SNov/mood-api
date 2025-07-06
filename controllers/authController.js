@@ -26,7 +26,6 @@ export const register = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        success: false,
         message: 'A validação falhou',
         errors: errors.array()
       });
@@ -38,8 +37,7 @@ export const register = async (req, res, next) => {
     const existingUser = await User.findByEmail(email);
     if (existingUser) {
       return res.status(409).json({
-        success: false,
-        message: 'User already exists with this email'
+        message: 'Não é possível criar um usuário com esse e-mail'
       });
     }
 
@@ -54,13 +52,9 @@ export const register = async (req, res, next) => {
     await RefreshToken.create(user.id, refreshToken, expiresAt);
 
     res.status(201).json({
-      success: true,
-      message: 'User registered successfully',
-      data: {
-        user: user.toJSON(),
-        token: accessToken,
-        refreshToken
-      }
+      user: user.toJSON(),
+      token: accessToken,
+      refreshToken
     });
   } catch (error) {
     next(error);
@@ -73,7 +67,6 @@ export const login = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        success: false,
         message: 'A validação falhou',
         errors: errors.array()
       });
@@ -85,8 +78,7 @@ export const login = async (req, res, next) => {
     const user = await User.findByEmail(email);
     if (!user) {
       return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials'
+        message: 'Credenciais inválidas'
       });
     }
 
@@ -94,8 +86,7 @@ export const login = async (req, res, next) => {
     const isPasswordValid = await user.verifyPassword(password);
     if (!isPasswordValid) {
       return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials'
+        message: 'Credenciais inválidas'
       });
     }
 
@@ -108,13 +99,9 @@ export const login = async (req, res, next) => {
     await RefreshToken.create(user.id, refreshToken, expiresAt);
 
     res.json({
-      success: true,
-      message: 'Login successful',
-      data: {
         user: user.toJSON(),
         token: accessToken,
         refreshToken
-      }
     });
   } catch (error) {
     next(error);
@@ -128,8 +115,7 @@ export const refreshToken = async (req, res, next) => {
 
     if (!refreshToken) {
       return res.status(401).json({
-        success: false,
-        message: 'Refresh token required'
+        message: 'Refresh token não informado'
       });
     }
 
@@ -140,8 +126,7 @@ export const refreshToken = async (req, res, next) => {
     const storedToken = await RefreshToken.findByToken(refreshToken);
     if (!storedToken || storedToken.isExpired()) {
       return res.status(401).json({
-        success: false,
-        message: 'Invalid or expired refresh token'
+        message: 'Token de refresh inválido ou expirado'
       });
     }
 
@@ -149,11 +134,7 @@ export const refreshToken = async (req, res, next) => {
     const { accessToken } = generateTokens(decoded.userId);
 
     res.json({
-      success: true,
-      message: 'Token refreshed successfully',
-      data: {
-        token: accessToken
-      }
+      token: accessToken
     });
   } catch (error) {
     next(error);
@@ -173,8 +154,7 @@ export const logout = async (req, res, next) => {
     }
 
     res.json({
-      success: true,
-      message: 'Logout successful'
+      message: 'Logout realizado com sucesso'
     });
   } catch (error) {
     next(error);
@@ -186,11 +166,7 @@ export const verifyToken = async (req, res, next) => {
   try {
     // Token is already verified by auth middleware
     res.json({
-      success: true,
-      message: 'Token is valid',
-      data: {
-        user: req.user
-      }
+      user: req.user
     });
   } catch (error) {
     next(error);
@@ -204,16 +180,12 @@ export const getProfile = async (req, res, next) => {
     
     if (!user) {
       return res.status(404).json({
-        success: false,
-        message: 'User not found'
+        message: 'Usuário não encontrado'
       });
     }
 
     res.json({
-      success: true,
-      data: {
-        user: user.toJSON()
-      }
+      user: user.toJSON()
     });
   } catch (error) {
     next(error);
@@ -226,8 +198,7 @@ export const updateProfile = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        success: false,
-        message: 'Validation failed',
+        message: 'Validação falhou',
         errors: errors.array()
       });
     }
@@ -235,19 +206,14 @@ export const updateProfile = async (req, res, next) => {
     const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({
-        success: false,
-        message: 'User not found'
+        message: 'Usuário não encontrado'
       });
     }
 
     const updatedUser = await user.update(req.body);
 
     res.json({
-      success: true,
-      message: 'Profile updated successfully',
-      data: {
-        user: updatedUser.toJSON()
-      }
+      user: updatedUser.toJSON()
     });
   } catch (error) {
     next(error);
