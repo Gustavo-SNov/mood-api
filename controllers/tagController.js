@@ -13,7 +13,7 @@ export const getAllTags = async (req, res, next) => {
 // Retorna tag por ID
 export const getTagById = async (req, res, next) => {
   try {
-    const tag = await Tag.findById(req.params.id);
+    const tag = await Tag.getTagsById(req.params.id);
     if (!tag) return res.status(404).json({ message: 'Tag não encontrada' });
     res.json( tag );
   } catch (err) {

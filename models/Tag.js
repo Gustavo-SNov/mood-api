@@ -4,6 +4,7 @@ export class Tag {
   constructor(data) {
     this.id = data.id;
     this.tag_name = data.tag_name;
+    this.icon = data.icon;
     this.group_id = data.group_id;
   }
 
@@ -12,7 +13,7 @@ export class Tag {
 
     const result = await Promise.all(groups.map(async group => {
       const tags = await getAllRows(
-        'SELECT id, tag_name FROM tag WHERE group_id = ?',
+        'SELECT id, tag_name as name, icon FROM tag WHERE group_id = ?',
         [group.id]
       );
 
@@ -26,10 +27,18 @@ export class Tag {
     return result;
   }
 
+  static async getTagsById(id){
+    const tag = await getRow('SELECT * FROM tag WHERE id = ?', id);
+    if (!tag) return null;
+
+     return tag;
+  }
+
   toJSON() {
     return {
       id: this.id,
-      tag_name: this.tag_name,
+      name: this.tag_name,
+      icon: this.icon,
       group_id: this.group_id
     };
   }
