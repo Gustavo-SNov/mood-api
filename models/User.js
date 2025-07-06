@@ -19,7 +19,7 @@ export class User {
 
     const result = await runQuery(
       "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-      [name, email, hashedPassword]
+      [name, email, hashedPassword],
     );
 
     return await User.findById(result.id);
@@ -37,7 +37,7 @@ export class User {
 
   static async findAll() {
     const users = await getAllRows(
-      "SELECT * FROM users ORDER BY created_at DESC"
+      "SELECT * FROM users ORDER BY created_at DESC",
     );
     return users.map((user) => new User(user));
   }
@@ -63,7 +63,7 @@ export class User {
 
     await runQuery(
       `UPDATE users SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
-      values
+      values,
     );
 
     return await User.findById(this.id);
@@ -74,7 +74,7 @@ export class User {
 
     await runQuery(
       "UPDATE users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-      [hashedPassword, this.id]
+      [hashedPassword, this.id],
     );
   }
 

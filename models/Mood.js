@@ -18,7 +18,7 @@ export class Mood {
 
     const result = await runQuery(
       "INSERT INTO moods (user_id, rating, note, date) VALUES (?, ?, ?, ?)",
-      [userId, rating, note, date]
+      [userId, rating, note, date],
     );
 
     const moodId = result.id;
@@ -73,7 +73,7 @@ export class Mood {
       moods.map(async (mood) => {
         const tags = await Tag.getTagsForMood(mood.id);
         return new Mood({ ...mood, tags });
-      })
+      }),
     );
 
     return moodsWithTags;
@@ -82,7 +82,7 @@ export class Mood {
   static async findByUserIdAndDate(userId, date) {
     const mood = await getRow(
       "SELECT * FROM moods WHERE user_id = ? AND date = ?",
-      [userId, date]
+      [userId, date],
     );
     if (!mood) return null;
 
@@ -111,7 +111,7 @@ export class Mood {
 
     await runQuery(
       `UPDATE moods SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
-      values
+      values,
     );
 
     return await Mood.findById(this.id);
@@ -128,7 +128,7 @@ export class Mood {
 
     const moods = await getAllRows(
       "SELECT rating, date FROM moods WHERE user_id = ? AND date >= ? ORDER BY date ASC",
-      [userId, startDate.toISOString().split("T")[0]]
+      [userId, startDate.toISOString().split("T")[0]],
     );
 
     const analytics = {

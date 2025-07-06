@@ -14,7 +14,7 @@ export class Tag {
        FROM tag 
        INNER JOIN mood_tag ON tag.id = mood_tag.tag_id 
        WHERE mood_tag.mood_id = ?`,
-      [moodId]
+      [moodId],
     );
 
     return data.map((tag) => new Tag(tag));
@@ -27,7 +27,7 @@ export class Tag {
       groups.map(async (group) => {
         const data = await getAllRows(
           "SELECT id, tag_name FROM tag WHERE group_id = ?",
-          [group.id]
+          [group.id],
         );
 
         const tags = data.map((tag) => new Tag(tag));
@@ -37,7 +37,7 @@ export class Tag {
           groupName: group.group_name,
           tags,
         };
-      })
+      }),
     );
 
     return result;

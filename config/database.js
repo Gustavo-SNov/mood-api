@@ -18,10 +18,10 @@ export const getDatabase = () => {
 };
 
 export const initDatabase = async () => {
-    try {
-        // Ensure database directory exists
-        const dbDir = path.dirname(DB_PATH);
-        await fs.mkdir(dbDir, {recursive: true});
+  try {
+    // Ensure database directory exists
+    const dbDir = path.dirname(DB_PATH);
+    await fs.mkdir(dbDir, { recursive: true });
 
     // Initialize SQLite database
     db = new sqlite3.Database(DB_PATH, (err) => {
@@ -34,11 +34,11 @@ export const initDatabase = async () => {
     // Enable foreign keys
     await runQuery("PRAGMA foreign_keys = ON");
 
-        // Create tables
-        await createTables();
+    // Create tables
+    await createTables();
 
-        // Função de preenchimento de informações DEFAULT no Banco de Dados
-        await seedDatabase();
+    // Função de preenchimento de informações DEFAULT no Banco de Dados
+    await seedDatabase();
 
     console.log("Database connected successfully");
   } catch (error) {
@@ -48,8 +48,8 @@ export const initDatabase = async () => {
 };
 
 const createTables = async () => {
-    // Users table
-    await runQuery(`
+  // Users table
+  await runQuery(`
         CREATE TABLE IF NOT EXISTS users
         (
             id
@@ -81,8 +81,8 @@ const createTables = async () => {
         )
     `);
 
-    // Refresh tokens table
-    await runQuery(`
+  // Refresh tokens table
+  await runQuery(`
         CREATE TABLE IF NOT EXISTS refresh_tokens
         (
             id
@@ -117,8 +117,8 @@ const createTables = async () => {
             )
     `);
 
-    // Moods table
-    await runQuery(`
+  // Moods table
+  await runQuery(`
         CREATE TABLE IF NOT EXISTS moods
         (
             id
@@ -158,7 +158,7 @@ const createTables = async () => {
             )
     `);
 
-    await runQuery(`
+  await runQuery(`
         CREATE TABLE IF NOT EXISTS group_tag
         (
             id
@@ -173,7 +173,7 @@ const createTables = async () => {
         )
     `);
 
-    await runQuery(`
+  await runQuery(`
         CREATE TABLE IF NOT EXISTS tag
         (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -184,7 +184,7 @@ const createTables = async () => {
         )
     `);
 
-    await runQuery(`
+  await runQuery(`
         CREATE TABLE IF NOT EXISTS mood_tag
         (
             mood_id
@@ -292,28 +292,28 @@ export const runQuery = (sql, params = []) => {
 
 // Helper function to get a single row
 export const getRow = (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-        db.get(sql, params, (err, row) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(row);
-            }
-        });
+  return new Promise((resolve, reject) => {
+    db.get(sql, params, (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
+      }
     });
+  });
 };
 
 // Helper function to get all rows
 export const getAllRows = (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-        db.all(sql, params, (err, rows) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(rows);
-            }
-        });
+  return new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
     });
+  });
 };
 
 // Close database connection
