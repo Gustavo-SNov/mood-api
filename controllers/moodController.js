@@ -1,20 +1,15 @@
-import { Mood } from '../models/Mood.js';
-import { validationResult } from 'express-validator';
+import { Mood } from "../models/Mood.js";
+import { validationResult } from "express-validator";
 
 // Get all moods for user
 export const getMoods = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { 
-      startDate, 
-      endDate, 
-      limit = 50, 
-      offset = 0 
-    } = req.query;
+    const { startDate, endDate, limit = 50, offset = 0 } = req.query;
 
     const options = {
       limit: parseInt(limit),
-      offset: parseInt(offset)
+      offset: parseInt(offset),
     };
 
     if (startDate) {
@@ -27,9 +22,7 @@ export const getMoods = async (req, res, next) => {
 
     const moods = await Mood.findByUserId(userId, options);
 
-    res.json(
-      moods.map(mood => mood.toJSON()),
-    );
+    res.json(moods.map((mood) => mood.toJSON()));
   } catch (error) {
     next(error);
   }
@@ -45,14 +38,14 @@ export const getMood = async (req, res, next) => {
 
     if (!mood) {
       return res.status(404).json({
-        message: 'Entrada de humor não encontrada'
+        message: "Entrada de humor não encontrada",
       });
     }
 
     // Check if mood belongs to user
     if (mood.user_id !== userId) {
       return res.status(403).json({
-        message: 'Acesso negado'
+        message: "Acesso negado",
       });
     }
 
@@ -64,24 +57,24 @@ export const getMood = async (req, res, next) => {
 
 export const createMood = async (req, res, next) => {
   try {
-    console.log("chegou aqui")
+    console.log("chegou aqui");
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        message: 'Falha na validação',
-        errors: errors.array()
+        message: "Falha na validação",
+        errors: errors.array(),
       });
     }
 
     const userId = req.user.id;
     const { rating, note, date, tag_ids } = req.body;
-    const moodDate = date || new Date().toISOString().split('T')[0];
+    const moodDate = date || new Date().toISOString().split("T")[0];
     const moodData = {
       user_id: userId,
       rating,
       note,
       date: moodDate,
-      tag_ids: Array.isArray(tag_ids) ? tag_ids : []
+      tag_ids: Array.isArray(tag_ids) ? tag_ids : [],
     };
 
     await Mood.create(moodData);
@@ -91,15 +84,14 @@ export const createMood = async (req, res, next) => {
   }
 };
 
-
 // Update mood entry
 export const updateMood = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        message: 'A validação falhou',
-        errors: errors.array()
+        message: "A validação falhou",
+        errors: errors.array(),
       });
     }
 
@@ -110,14 +102,14 @@ export const updateMood = async (req, res, next) => {
 
     if (!mood) {
       return res.status(404).json({
-        message: 'Entrada de humor não encontrada'
+        message: "Entrada de humor não encontrada",
       });
     }
 
     // Check if mood belongs to user
     if (mood.user_id !== userId) {
       return res.status(403).json({
-        message: 'Acesso negado'
+        message: "Acesso negado",
       });
     }
 
@@ -138,14 +130,14 @@ export const deleteMood = async (req, res, next) => {
 
     if (!mood) {
       return res.status(404).json({
-        message: 'Entrada de humor não encontrada'
+        message: "Entrada de humor não encontrada",
       });
     }
 
     // Check if mood belongs to user
     if (mood.user_id !== userId) {
       return res.status(403).json({
-        message: 'Acesso negado'
+        message: "Acesso negado",
       });
     }
 
@@ -159,12 +151,12 @@ export const deleteMood = async (req, res, next) => {
 export const getAnalytics = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { range = '30d' } = req.query;
+    const { range = "30d" } = req.query;
 
     const analytics = await Mood.getAnalytics(userId, range);
 
     res.json({
-        analytics
+      analytics,
     });
   } catch (error) {
     next(error);
@@ -174,12 +166,12 @@ export const getAnalytics = async (req, res, next) => {
 export const getTrends = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { range = '30d' } = req.query;
+    const { range = "30d" } = req.query;
 
     const trends = await Mood.getTrends(userId, range);
 
     res.json({
-        trends
+      trends,
     });
   } catch (error) {
     next(error);

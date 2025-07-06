@@ -3,8 +3,9 @@
 Uma API completa para rastreamento de humor construída com Node.js, Express e SQLite3, com documentação interativa Swagger.
 
 ## O que falta:
+
 - Tags são atividades
-- Atividades são retornados -> Array de Tags 
+- Atividades são retornados -> Array de Tags
 - Cada Tag: Tag = { Icone, Nome, Grupo}
 - Tag.Grupo não será retornado na Requisição
 - Grupo é uma FK da Tag
@@ -14,28 +15,31 @@ Uma API completa para rastreamento de humor construída com Node.js, Express e S
 - Register não retorna nada, apenas uma mensagem de sucesso!
 - DELETE NO USER
 
-
 ## 🚀 Funcionalidades
 
 ### 🔐 Autenticação
+
 - Registro e login de usuários
 - JWT tokens com refresh tokens
 - Verificação de tokens
 - Gerenciamento de perfil
 
 ### 📊 Rastreamento de Humor
+
 - CRUD completo para entradas de humor
 - Validação de dados
 - Análises e tendências
 - Filtragem por data
 
 ### 📈 Analytics
+
 - Estatísticas de humor
 - Tendências por período
 - Distribuição de humor
 - Melhores e piores dias
 
 ### 📚 Documentação
+
 - Swagger UI interativo
 - Documentação completa da API
 - Exemplos de uso
@@ -44,23 +48,27 @@ Uma API completa para rastreamento de humor construída com Node.js, Express e S
 ## 📦 Instalação
 
 1. Clone o repositório:
+
 ```bash
 git clone <repository-url>
 cd mood-tracker-api
 ```
 
 2. Instale as dependências:
+
 ```bash
 npm install
 ```
 
 3. Configure as variáveis de ambiente:
+
 ```bash
 cp .env.example .env
 # Edite o arquivo .env com suas configurações
 ```
 
 4. Execute o servidor:
+
 ```bash
 # Desenvolvimento
 npm run dev
@@ -77,6 +85,7 @@ Após iniciar o servidor, acesse a documentação interativa:
 - **Health Check**: http://localhost:3000/api/health
 
 A documentação Swagger inclui:
+
 - ✅ Todos os endpoints disponíveis
 - ✅ Esquemas de dados detalhados
 - ✅ Exemplos de requisições e respostas
@@ -88,27 +97,27 @@ A documentação Swagger inclui:
 
 ### Autenticação (`/api/auth`)
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| POST | `/register` | Registrar novo usuário |
-| POST | `/login` | Fazer login |
-| POST | `/refresh` | Renovar token |
-| POST | `/logout` | Fazer logout |
-| GET | `/verify` | Verificar token |
-| GET | `/profile` | Obter perfil do usuário |
-| PUT | `/profile` | Atualizar perfil |
+| Método | Endpoint    | Descrição               |
+| ------ | ----------- | ----------------------- |
+| POST   | `/register` | Registrar novo usuário  |
+| POST   | `/login`    | Fazer login             |
+| POST   | `/refresh`  | Renovar token           |
+| POST   | `/logout`   | Fazer logout            |
+| GET    | `/verify`   | Verificar token         |
+| GET    | `/profile`  | Obter perfil do usuário |
+| PUT    | `/profile`  | Atualizar perfil        |
 
 ### Humor (`/api/moods`)
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/` | Listar humores |
-| GET | `/:id` | Obter humor específico |
-| POST | `/` | Criar novo humor |
-| PUT | `/:id` | Atualizar humor |
-| DELETE | `/:id` | Deletar humor |
-| GET | `/analytics` | Obter análises |
-| GET | `/trends` | Obter tendências |
+| Método | Endpoint     | Descrição              |
+| ------ | ------------ | ---------------------- |
+| GET    | `/`          | Listar humores         |
+| GET    | `/:id`       | Obter humor específico |
+| POST   | `/`          | Criar novo humor       |
+| PUT    | `/:id`       | Atualizar humor        |
+| DELETE | `/:id`       | Deletar humor          |
+| GET    | `/analytics` | Obter análises         |
+| GET    | `/trends`    | Obter tendências       |
 
 ## 🏗️ Estrutura do Projeto
 
@@ -143,6 +152,7 @@ A documentação Swagger inclui:
 ## 📊 Modelos de Dados
 
 ### Usuário
+
 ```json
 {
   "id": 1,
@@ -154,6 +164,7 @@ A documentação Swagger inclui:
 ```
 
 ### Humor
+
 ```json
 {
   "id": 1,
@@ -170,6 +181,7 @@ A documentação Swagger inclui:
 ## 🧪 Testando a API
 
 ### Via Swagger UI (Recomendado)
+
 1. Acesse http://localhost:3000/api-docs
 2. Clique em "Authorize" e insira seu token JWT
 3. Teste qualquer endpoint diretamente na interface
@@ -177,6 +189,7 @@ A documentação Swagger inclui:
 ### Via cURL
 
 #### Registro de Usuário
+
 ```bash
 curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
@@ -188,6 +201,7 @@ curl -X POST http://localhost:3000/api/auth/register \
 ```
 
 #### Login
+
 ```bash
 curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
@@ -198,6 +212,7 @@ curl -X POST http://localhost:3000/api/auth/login \
 ```
 
 #### Criar Entrada de Humor
+
 ```bash
 curl -X POST http://localhost:3000/api/moods \
   -H "Content-Type: application/json" \

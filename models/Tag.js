@@ -1,4 +1,4 @@
-import { getRow, getAllRows, runQuery } from '../config/database.js';
+import { getRow, getAllRows, runQuery } from "../config/database.js";
 
 export class Tag {
   constructor(data) {
@@ -8,20 +8,22 @@ export class Tag {
   }
 
   static async getGroupsWithTags() {
-    const groups = await getAllRows('SELECT * FROM group_tag');
+    const groups = await getAllRows("SELECT * FROM group_tag");
 
-    const result = await Promise.all(groups.map(async group => {
-      const tags = await getAllRows(
-        'SELECT id, tag_name FROM tag WHERE group_id = ?',
-        [group.id]
-      );
+    const result = await Promise.all(
+      groups.map(async (group) => {
+        const tags = await getAllRows(
+          "SELECT id, tag_name FROM tag WHERE group_id = ?",
+          [group.id],
+        );
 
-      return {
-        id: group.id,
-        group_name: group.group_name,
-        tags
-      };
-    }));
+        return {
+          id: group.id,
+          group_name: group.group_name,
+          tags,
+        };
+      }),
+    );
 
     return result;
   }
@@ -30,7 +32,7 @@ export class Tag {
     return {
       id: this.id,
       tag_name: this.tag_name,
-      group_id: this.group_id
+      group_id: this.group_id,
     };
   }
 }
