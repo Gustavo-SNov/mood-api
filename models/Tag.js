@@ -26,7 +26,7 @@ export class Tag {
     const result = await Promise.all(
       groups.map(async (group) => {
         const data = await getAllRows(
-          "SELECT id, tag_name FROM tag WHERE group_id = ?",
+          "SELECT id, tag_name, icon FROM tag WHERE group_id = ?",
           [group.id],
         );
 
