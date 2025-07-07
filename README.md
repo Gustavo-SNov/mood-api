@@ -147,7 +147,8 @@ JWT_SECRET=your-super-secret-jwt-key
 JWT_REFRESH_SECRET=your-super-secret-refresh-key
 JWT_EXPIRES_IN=1h
 JWT_REFRESH_EXPIRES_IN=7d
-DB_PATH=./database/mood_tracker.db
-CORS_ORIGIN=http://localhost:5173
-API_URL=http://localhost:3000
 ```
+
+## Licença
+
+Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE.txt para detalhes.
