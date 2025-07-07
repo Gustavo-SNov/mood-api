@@ -220,10 +220,8 @@ const createTables = async () => {
     `);
 };
 
-// NOVO: Função de seeding integrada ao arquivo do banco de dados
 const seedDatabase = async () => {
     try {
-        // 1. Verifica se a tabela de grupos já tem dados
         const checkRow = await getRow('SELECT COUNT(id) as count FROM group_tag');
         if (checkRow && checkRow.count > 0) {
             console.log('Database already seeded. Skipping.');
@@ -231,8 +229,6 @@ const seedDatabase = async () => {
         }
 
         console.log('Database is empty. Seeding initial data...');
-
-        // 2. Define os dados iniciais, agora com nomes de ícones para cada tag
         const initialData = [
             {
                 group_name: 'Atividades',
@@ -285,16 +281,13 @@ const seedDatabase = async () => {
             }
         ];
 
-        // 3. Insere os dados com a lógica corrigida
         for (const groupData of initialData) {
             const { group_name, tags } = groupData;
             const groupResult = await runQuery('INSERT INTO group_tag (group_name) VALUES (?)', [group_name]);
             const groupId = groupResult.id;
 
             if (tags && tags.length > 0) {
-                // Itera sobre a lista de objetos de tag (que agora contêm nome e ícone)
                 for (const tag of tags) {
-                    // Corrige o comando INSERT para incluir 3 colunas e 3 valores
                     await runQuery('INSERT INTO tag (tag_name, icon, group_id) VALUES (?, ?, ?)', [tag.name, tag.icon, groupId]);
                 }
             }
@@ -306,7 +299,6 @@ const seedDatabase = async () => {
     }
 }
 
-// Helper function to run queries with Promise
 export const runQuery = (sql, params = []) => {
     return new Promise((resolve, reject) => {
         db.run(sql, params, function (err) {
@@ -319,7 +311,6 @@ export const runQuery = (sql, params = []) => {
     });
 };
 
-// Helper function to get a single row
 export const getRow = (sql, params = []) => {
     return new Promise((resolve, reject) => {
         db.get(sql, params, (err, row) => {
@@ -332,7 +323,6 @@ export const getRow = (sql, params = []) => {
     });
 };
 
-// Helper function to get all rows
 export const getAllRows = (sql, params = []) => {
     return new Promise((resolve, reject) => {
         db.all(sql, params, (err, rows) => {

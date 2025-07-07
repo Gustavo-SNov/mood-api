@@ -41,31 +41,10 @@ export class Mood {
     return new Mood({ ...mood, tags });
   }
 
-  static async findByUserId(userId, options = {}) {
+  static async findByUserId(userId) {
     let query = "SELECT * FROM moods WHERE user_id = ?";
     let params = [userId];
-
-    if (options.startDate) {
-      query += " AND date >= ?";
-      params.push(options.startDate);
-    }
-
-    if (options.endDate) {
-      query += " AND date <= ?";
-      params.push(options.endDate);
-    }
-
     query += " ORDER BY date DESC";
-
-    if (options.limit) {
-      query += " LIMIT ?";
-      params.push(options.limit);
-    }
-
-    if (options.offset) {
-      query += " OFFSET ?";
-      params.push(options.offset);
-    }
 
     const moods = await getAllRows(query, params);
 
@@ -73,7 +52,7 @@ export class Mood {
       moods.map(async (mood) => {
         const tags = await Tag.getTagsForMood(mood.id);
         return new Mood({ ...mood, tags });
-      }),
+      })
     );
 
     return moodsWithTags;
@@ -190,6 +169,32 @@ export class Mood {
     analytics.topTags = await Tag.getTopTagsForUser(userId, timeRange, 5);
 
     return analytics;
+  }
+
+  static async getTrends(userId, timeRange = '30d') {
+    const days = parseInt(timeRange.replace('d', '')) || 30;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const formattedDate = startDate.toISOString().split('T')[0];
+
+    const query = `
+      SELECT 
+        date,
+        AVG(rating) AS avg_mood,
+        COUNT(*) AS entries
+      FROM moods
+      WHERE user_id = ? AND date >= ?
+      GROUP BY date
+      ORDER BY date ASC
+    `;
+
+    const trends = await getAllRows(query, [userId, formattedDate]);
+
+    return trends.map(trend => ({
+      date: trend.date,
+      avg_mood: Math.round(trend.avg_mood * 100) / 100,
+      entries: trend.entries
+    }));
   }
 
   toJSON() {

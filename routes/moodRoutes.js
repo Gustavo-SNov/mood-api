@@ -6,7 +6,8 @@ import {
   createMood,
   updateMood,
   deleteMood,
-  getAnalytics
+  getAnalytics,
+  getTrends
 } from "../controllers/moodController.js";
 import { authenticateToken } from "../middleware/auth.js";
 
@@ -59,6 +60,7 @@ const moodUpdateValidation = [
 
 router.get('/', getMoods);
 router.post('/', moodValidation, createMood);
+router.get('/trends', getTrends);
 router.get('/analytics', getAnalytics);
 router.get('/:id', getMood);
 router.put('/:id', moodUpdateValidation, updateMood);

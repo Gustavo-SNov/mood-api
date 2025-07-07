@@ -44,28 +44,3 @@ export const authenticateToken = async (req, res, next) => {
     });
   }
 };
-
-export const optionalAuth = async (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (!token) {
-    return next();
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await getRow(
-      "SELECT id, name, email FROM users WHERE id = ?",
-      [decoded.userId],
-    );
-
-    if (user) {
-      req.user = user;
-    }
-  } catch (error) {
-    // Continue without user for optional auth
-  }
-
-  next();
-};
