@@ -60,7 +60,6 @@ const moodUpdateValidation = [
 
 router.get('/', getMoods);
 router.post('/', moodValidation, createMood);
-router.get('/trends', getTrends);
 router.get('/analytics', getAnalytics);
 router.get('/:id', getMood);
 router.put('/:id', moodUpdateValidation, updateMood);
