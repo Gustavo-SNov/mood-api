@@ -137,7 +137,8 @@ export class Mood {
       moodDistribution: {},
       bestDay: null,
       worstDay: null,
-      topTags: []
+      topTags: [],
+      trends: []
     };
 
     if (moods.length === 0) {
@@ -167,6 +168,7 @@ export class Mood {
     });
 
     analytics.topTags = await Tag.getTopTagsForUser(userId, timeRange, 5);
+    analytics.trends = await this.getTrends(userId, timeRange);
 
     return analytics;
   }
