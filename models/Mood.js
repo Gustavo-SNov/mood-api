@@ -151,6 +151,32 @@ export class Mood {
     return analytics;
   }
 
+  static async getTrends(userId, timeRange = '30d') {
+    const days = parseInt(timeRange.replace('d', '')) || 30;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const formattedDate = startDate.toISOString().split('T')[0];
+
+    const query = `
+      SELECT 
+        date,
+        AVG(rating) AS avg_mood,
+        COUNT(*) AS entries
+      FROM moods
+      WHERE user_id = ? AND date >= ?
+      GROUP BY date
+      ORDER BY date ASC
+    `;
+
+    const trends = await getAllRows(query, [userId, formattedDate]);
+
+    return trends.map(trend => ({
+      date: trend.date,
+      avg_mood: Math.round(trend.avg_mood * 100) / 100,
+      entries: trend.entries
+    }));
+  }
+
   toJSON() {
     return {
       id: this.id,
