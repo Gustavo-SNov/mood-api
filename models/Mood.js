@@ -41,31 +41,10 @@ export class Mood {
     return new Mood({ ...mood, tags });
   }
 
-  static async findByUserId(userId, options = {}) {
+  static async findByUserId(userId) {
     let query = "SELECT * FROM moods WHERE user_id = ?";
     let params = [userId];
-
-    if (options.startDate) {
-      query += " AND date >= ?";
-      params.push(options.startDate);
-    }
-
-    if (options.endDate) {
-      query += " AND date <= ?";
-      params.push(options.endDate);
-    }
-
     query += " ORDER BY date DESC";
-
-    if (options.limit) {
-      query += " LIMIT ?";
-      params.push(options.limit);
-    }
-
-    if (options.offset) {
-      query += " OFFSET ?";
-      params.push(options.offset);
-    }
 
     const moods = await getAllRows(query, params);
 
@@ -73,7 +52,7 @@ export class Mood {
       moods.map(async (mood) => {
         const tags = await Tag.getTagsForMood(mood.id);
         return new Mood({ ...mood, tags });
-      }),
+      })
     );
 
     return moodsWithTags;
