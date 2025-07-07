@@ -44,6 +44,10 @@ app.use("/api/moods", moodRoutes);
 app.use("/api/tags", tagsRoutes);
 app.use("/api/user", userRoutes);
 
+app.get("/", (req, res) => {
+  res.redirect("/api");
+});
+
 // Error handling middleware
 app.use(notFound);
 app.use(errorHandler);

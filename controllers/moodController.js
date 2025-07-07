@@ -5,22 +5,7 @@ import { validationResult } from "express-validator";
 export const getMoods = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { startDate, endDate, limit = 50, offset = 0 } = req.query;
-
-    const options = {
-      limit: parseInt(limit),
-      offset: parseInt(offset),
-    };
-
-    if (startDate) {
-      options.startDate = startDate;
-    }
-
-    if (endDate) {
-      options.endDate = endDate;
-    }
-
-    const moods = await Mood.findByUserId(userId, options);
+    const moods = await Mood.findByUserId(userId);
 
     res.json(moods.map((mood) => mood.toJSON()));
   } catch (error) {
