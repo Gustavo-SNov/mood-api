@@ -10,11 +10,11 @@ export class Tag {
 
   static async getTagsForMood(moodId) {
     const data = await getAllRows(
-      `SELECT tag.id, tag.tag_name, tag.group_id 
+      `SELECT tag.id, tag.tag_name, tag.group_id, tag.icon
        FROM tag 
        INNER JOIN mood_tag ON tag.id = mood_tag.tag_id 
        WHERE mood_tag.mood_id = ?`,
-      [moodId],
+      [moodId]
     );
 
     return data.map((tag) => new Tag(tag));
@@ -27,7 +27,7 @@ export class Tag {
       groups.map(async (group) => {
         const data = await getAllRows(
           "SELECT id, tag_name, icon FROM tag WHERE group_id = ?",
-          [group.id],
+          [group.id]
         );
 
         const tags = data.map((tag) => new Tag(tag));
@@ -37,7 +37,7 @@ export class Tag {
           groupName: group.group_name,
           tags,
         };
-      }),
+      })
     );
 
     return result;
@@ -50,11 +50,11 @@ export class Tag {
     return tag;
   }
 
-  static async getTopTagsForUser(userId, timeRange = '30d', limit = 3) {
-    const days = parseInt(timeRange.replace('d', '')) || 30;
+  static async getTopTagsForUser(userId, timeRange = "30d", limit = 3) {
+    const days = parseInt(timeRange.replace("d", "")) || 30;
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
-    const startDateStr = startDate.toISOString().split('T')[0];
+    const startDateStr = startDate.toISOString().split("T")[0];
 
     const topTags = await getAllRows(
       `
