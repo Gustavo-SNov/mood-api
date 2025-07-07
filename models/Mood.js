@@ -90,32 +90,52 @@ export class Mood {
     return new Mood({ ...mood, tags });
   }
 
-  async update(updates) {
-    const allowedUpdates = ["rating", "note"];
+ async update(updates) {
+    const allowedUpdates = ["rating", "note", "tags"];
     const validUpdates = {};
 
     for (const key of allowedUpdates) {
-      if (updates[key] !== undefined) {
-        validUpdates[key] = updates[key];
-      }
+        if (updates[key] !== undefined) {
+            validUpdates[key] = updates[key];
+        }
     }
 
     if (Object.keys(validUpdates).length === 0) {
-      return this;
+        return this;
     }
 
-    const setClause = Object.keys(validUpdates)
-      .map((key) => `${key} = ?`)
-      .join(", ");
-    const values = [...Object.values(validUpdates), this.id];
+    // Atualiza os campos do mood (rating e note)
+    if (validUpdates.rating || validUpdates.note) {
+        const moodUpdates = {};
+        if (validUpdates.rating) moodUpdates.rating = validUpdates.rating;
+        if (validUpdates.note) moodUpdates.note = validUpdates.note;
 
-    await runQuery(
-      `UPDATE moods SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
-      values,
-    );
+        const setClause = Object.keys(moodUpdates)
+            .map((key) => `${key} = ?`)
+            .join(", ");
+        const values = [...Object.values(moodUpdates), this.id];
+
+        await runQuery(
+            `UPDATE moods SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+            values,
+        );
+    }
+
+    if (validUpdates.tags !== undefined) {
+       
+        await runQuery("DELETE FROM mood_tag WHERE mood_id = ?", [this.id]);
+        if (Array.isArray(validUpdates.tags) && validUpdates.tags.length > 0) {
+            for (const tagId of validUpdates.tags) {
+                await runQuery("INSERT INTO mood_tag (mood_id, tag_id) VALUES (?, ?)", [
+                    this.id,
+                    tagId,
+                ]);
+            }
+        }
+    }
 
     return await Mood.findById(this.id);
-  }
+}
 
   async delete() {
     await runQuery("DELETE FROM moods WHERE id = ?", [this.id]);
