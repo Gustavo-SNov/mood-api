@@ -146,3 +146,18 @@ export const getAnalytics = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getTrends = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { range = '30d' } = req.query;
+
+    const trends = await Mood.getTrends(userId, range);
+
+    res.json(
+        trends
+    );
+  } catch (error) {
+    next(error);
+  }
+};
