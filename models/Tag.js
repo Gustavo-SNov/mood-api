@@ -1,4 +1,4 @@
-import { getAllRows, getRow } from "../config/database.js";
+import { getAllRows } from "../config/database.js";
 
 export class Tag {
   constructor(data) {
@@ -41,13 +41,6 @@ export class Tag {
     );
 
     return result;
-  }
-
-  static async getTagsById(id) {
-    const tag = await getRow("SELECT * FROM tag WHERE id = ?", id);
-    if (!tag) return null;
-
-    return tag;
   }
 
   static async getTopTagsForUser(userId, timeRange = '30d', limit = 3) {

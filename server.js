@@ -1,12 +1,6 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
-
-// Import Configs/Swagger
-import config from "./config/index.js";
-import { specs, swaggerUi } from "./config/swagger.js";
 
 // Import routes
 import authRoutes from "./routes/authRoutes.js";
@@ -23,9 +17,6 @@ import { initDatabase } from "./config/database.js";
 
 // Load environment variables
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -47,33 +38,11 @@ app.options('*', cors({
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// Documentação do Swagger
-app.use(
-  "/api-docs",
-  swaggerUi.serve,
-  swaggerUi.setup(specs, config.swaggerOptions),
-);
-
-// Health check endpoint
-app.get("/api/health", (req, res) => {
-  res.json({
-    status: "ok",
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    documentation: "/api-docs",
-  });
-});
-
 // API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/moods", moodRoutes);
 app.use("/api/tags", tagsRoutes);
 app.use("/api/user", userRoutes);
-
-// Redirect root to documentation
-app.get("/", (req, res) => {
-  res.redirect("/api-docs");
-});
 
 // Error handling middleware
 app.use(notFound);
@@ -86,10 +55,7 @@ const startServer = async () => {
     console.log("✅ Database initialized successfully");
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
-      console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
-      console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
+      console.log(`🚀 Server running on port ${PORT}: http://localhost:${PORT}/api`);
     });
   } catch (error) {
     console.error("❌ Failed to start server:", error);
