@@ -237,10 +237,10 @@ const seedDatabase = async () => {
             {
                 group_name: 'Atividades',
                 tags: [
-                    { name: 'Trabalho', icon: 'Briefcase' },
+                    { name: 'Trabalho', icon: 'briefcase' },
                     { name: 'Estudo', icon: 'School' },
-                    { name: 'Exercício', icon: 'Dumbbell' },
-                    { name: 'Lazer', icon: 'Gamepad2' }
+                    { name: 'Exercício', icon: 'dumbbell' },
+                    { name: 'Lazer', icon: 'gamepad-2' }
                 ]
             },
             {
