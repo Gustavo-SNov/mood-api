@@ -194,7 +194,7 @@ export class Mood {
 
     return trends.map(trend => ({
       date: trend.date,
-      avg_mood: Math.round(trend.avg_mood * 100) / 100,
+      averageMood: Math.round(trend.avg_mood * 100) / 100,
       entries: trend.entries
     }));
   }
